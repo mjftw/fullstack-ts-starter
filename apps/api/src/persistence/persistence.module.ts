@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { PrismaService } from './prisma/prisma.service';
+import { DrizzleService } from './drizzle/drizzle.service';
 
 @Module({
-  providers: [PrismaService],
-  exports: [PrismaService],
+  providers: [DrizzleService],
+  exports: [DrizzleService],
 })
 export class PersistenceModule {}
