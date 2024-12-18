@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { vi } from 'vitest';
 import { ConfigService } from '@nestjs/config';
 import { DrizzleService } from './drizzle.service';
 
@@ -12,7 +13,7 @@ describe('DrizzleService', () => {
         {
           provide: ConfigService,
           useValue: {
-            get: jest
+            get: vi
               .fn()
               .mockReturnValue('postgres://user:pass@localhost:5432/db'),
           },

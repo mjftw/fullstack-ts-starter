@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
+import { Mocked, vi } from 'vitest';
 import { validationSchemaForEnv } from '../config/environment-variables';
 import { User } from '../persistence/drizzle/schema';
 import { UsersRepository } from '../repository/users/usersRepository.service';
@@ -7,11 +8,11 @@ import { UsersController } from './users.controller';
 
 describe('UsersController', () => {
   let usersController: UsersController;
-  let usersRepository: { findAll: jest.Mock };
+  let usersRepository: { findAll: Mocked<UsersRepository>['findAll'] };
 
   beforeEach(async () => {
     usersRepository = {
-      findAll: jest.fn().mockResolvedValue([]),
+      findAll: vi.fn().mockResolvedValue([]),
     };
 
     const module: TestingModule = await Test.createTestingModule({
