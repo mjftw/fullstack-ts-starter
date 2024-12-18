@@ -1,11 +1,11 @@
-# Turborepo (NestJS + Prisma + NextJS + Tailwind + Typescript + Jest) Starter
+# Turborepo (NestJS + Drizzle + NextJS + Tailwind + Typescript + Jest) Starter
 
 This is fullstack turborepo starter. It comes with the following features.
 
 - ✅ Turborepo
 - ✅ Nestjs
   - ✅ Env Config with Validation
-  - ✅ Prisma
+  - ✅ Drizzle
 - ✅ NextJS
   - ✅ Tailwind
   - ✅ Redux Toolkit Query
