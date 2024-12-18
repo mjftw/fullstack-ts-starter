@@ -1,11 +1,14 @@
 import type { Config } from 'drizzle-kit';
+import { validateEnv } from './src/config/environment-variables';
+
+// Validate environment variables
+const validatedEnv = validateEnv(process.env);
 
 export default {
   schema: './src/persistence/drizzle/schema/index.ts',
   out: './drizzle',
   dialect: 'postgresql',
   dbCredentials: {
-    // TODO: use config service
-    url: process.env.DATABASE_URL,
+    url: validatedEnv.DATABASE_URL,
   },
 } satisfies Config;
