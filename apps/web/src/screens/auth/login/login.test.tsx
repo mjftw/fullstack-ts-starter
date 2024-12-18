@@ -1,6 +1,10 @@
-import { render } from "@testing-library/react";
-import { LoginScreen } from "./login";
+import { describe, it, expect } from "vitest";
+import { render, screen } from "@testing-library/react";
+import LoginScreen from "./login";
 
-test("render login component", () => {
-  render(<LoginScreen />);
+describe("Login", () => {
+  it("renders login form", () => {
+    render(<LoginScreen />);
+    // Your test assertions...
+  });
 });

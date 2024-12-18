@@ -1,9 +1,11 @@
 import { Button } from "ui";
 
-export function LoginScreen() {
+const LoginScreen = () => {
   return (
     <div>
       Login Screen <Button />
     </div>
   );
-}
+};
+
+export default LoginScreen;

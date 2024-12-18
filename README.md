@@ -1,4 +1,4 @@
-# Turborepo (NestJS + Drizzle + NextJS + Tailwind + Typescript + Jest) Starter
+# Turborepo (NestJS + Drizzle + NextJS + Tailwind + Typescript + Vitest) Starter
 
 This is fullstack turborepo starter. It comes with the following features.
 
@@ -6,12 +6,10 @@ This is fullstack turborepo starter. It comes with the following features.
 - ✅ Nestjs
   - ✅ Env Config with Validation
   - ✅ Drizzle
-  - ✅ Vitest
 - ✅ NextJS
   - ✅ Tailwind
   - ✅ Redux Toolkit Query
-  - ✅ Jest (Will be replaced with Vitest)
-- ✅ Testing using Jest
+- ✅ Testing using Vitest
 - ✅ Github Actions
 - ✅ Reverse Proxy using Nginx
 - ✅ Docker Integration
