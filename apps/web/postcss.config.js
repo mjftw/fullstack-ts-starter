@@ -1,1 +1,5 @@
-module.exports = require("config/postcss.config");
+export default {
+  plugins: {
+    tailwindcss: {},
+  },
+};

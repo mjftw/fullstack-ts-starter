@@ -1,23 +1,19 @@
 import { defineConfig } from "vitest/config";
+import tsconfigPaths from "vite-tsconfig-paths";
 import react from "@vitejs/plugin-react";
-import { resolve } from "path";
 
 export default defineConfig({
-  plugins: [react()],
-  resolve: {
-    alias: {
-      "@": resolve(__dirname, "./src"),
-    },
-  },
+  plugins: [tsconfigPaths(), react()],
   test: {
     globals: true,
-    environment: "jsdom",
-    setupFiles: ["./vitest.setup.ts"],
-    include: ["src/**/*.{test,spec}.{js,jsx,ts,tsx}"],
-    coverage: {
-      provider: "v8",
-      reporter: ["text", "json", "html"],
-      reportsDirectory: "./coverage",
-    },
+    setupFiles: ["test/testUtils/testSetup.ts"],
+    environmentMatchGlobs: [
+      // All frontend tests will run with jsdom environment
+      ["**/*.test.{tsx,jsx}", "jsdom"],
+      // All backend tests will run with node environment
+      ["**/*.test.{ts,js}", "node"],
+    ],
+    exclude: ["**/node_modules/**", "**/dist/**"],
+    css: true,
   },
 });
