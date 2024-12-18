@@ -1,19 +1,25 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { PersistenceModule } from './persistence/persistence.module';
+import { AppService } from '../app.service';
+import { ConfigModule } from '@nestjs/config';
+import { validationSchemaForEnv } from '../config/environment-variables';
 
 describe('AppController', () => {
   let appController: AppController;
 
   beforeEach(async () => {
-    const app: TestingModule = await Test.createTestingModule({
-      imports: [PersistenceModule],
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+          validationSchema: validationSchemaForEnv,
+        }),
+      ],
       controllers: [AppController],
       providers: [AppService],
     }).compile();
 
-    appController = app.get<AppController>(AppController);
+    appController = module.get<AppController>(AppController);
   });
 
   describe('root', () => {
