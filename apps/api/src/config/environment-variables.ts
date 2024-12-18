@@ -12,7 +12,13 @@ export function validateEnv(config: Record<string, unknown>) {
   const result = validationSchemaForEnv.safeParse(config);
 
   if (!result.success) {
-    throw new Error(result.error.toString());
+    console.error(
+      '❌ Invalid environment variables:\n',
+      result.error.errors
+        .map((error) => `  - ${error.path.join('.')}: ${error.message}`)
+        .join('\n'),
+    );
+    throw new Error('Invalid environment variables');
   }
 
   return result.data;
