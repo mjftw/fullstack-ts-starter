@@ -2,11 +2,11 @@ import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
-import { trpc } from "./utils/trpc";
+import { UserList } from "./components/UserList";
+import { AddUserForm } from "./components/AddUserForm";
 
 function App() {
   const [count, setCount] = useState(0);
-  const users = trpc.users.findAll.useQuery();
 
   return (
     <>
@@ -26,13 +26,9 @@ function App() {
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
-        {users.isLoading ? (
-          <p>tRPC Loading...</p>
-        ) : (
-          <p>Found users: {users.data?.map((user) => user.name).join(", ")}</p>
-        )}
-        {users.error && <p>tRPC Error: {users.error.message}</p>}
+        <UserList />
       </div>
+      <AddUserForm />
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
