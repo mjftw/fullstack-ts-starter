@@ -10,7 +10,9 @@ export class DrizzleService implements OnModuleInit, OnModuleDestroy {
   public readonly db: ReturnType<typeof drizzle>;
 
   constructor(private readonly configService: ConfigService) {
-    this.queryClient = postgres(this.configService.get<string>('DATABASE_URL'));
+    this.queryClient = postgres(
+      this.configService.getOrThrow<string>('DATABASE_URL'),
+    );
     this.db = drizzle(this.queryClient, { schema: schema });
   }
 
