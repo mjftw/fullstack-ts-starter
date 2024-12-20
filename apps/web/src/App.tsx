@@ -2,9 +2,11 @@ import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
+import { trpc } from "./utils/trpc";
 
 function App() {
   const [count, setCount] = useState(0);
+  const hello = trpc.hello.useQuery({ name: "Vite + React" });
 
   return (
     <>
@@ -24,6 +26,12 @@ function App() {
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
+        {hello.isLoading ? (
+          <p>tRPC Loading...</p>
+        ) : (
+          <p>{hello.data?.greeting}</p>
+        )}
+        {hello.error && <p>tRPC Error: {hello.error.message}</p>}
       </div>
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
