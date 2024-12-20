@@ -6,7 +6,7 @@ import { trpc } from "./utils/trpc";
 
 function App() {
   const [count, setCount] = useState(0);
-  const hello = trpc.hello.useQuery({ name: "Vite + React" });
+  const users = trpc.findAllUsers.useQuery();
 
   return (
     <>
@@ -26,12 +26,12 @@ function App() {
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
-        {hello.isLoading ? (
+        {users.isLoading ? (
           <p>tRPC Loading...</p>
         ) : (
-          <p>{hello.data?.greeting}</p>
+          <p>Found users: {users.data?.map((user) => user.name).join(", ")}</p>
         )}
-        {hello.error && <p>tRPC Error: {hello.error.message}</p>}
+        {users.error && <p>tRPC Error: {users.error.message}</p>}
       </div>
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more

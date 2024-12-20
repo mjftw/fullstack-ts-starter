@@ -1,7 +1,7 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import * as trpcExpress from '@trpc/server/adapters/express';
-import { appRouter } from '../trpc/routers/root';
+import { appRouter } from '../trpc/trpc';
 import { createContext } from '../trpc/trpc';
 import { UserService } from 'src/services/userService';
 
@@ -11,7 +11,7 @@ export class TrpcMiddleware implements NestMiddleware {
 
   use(req: Request, res: Response, next: NextFunction) {
     trpcExpress.createExpressMiddleware({
-      router: appRouter as any, // FIXME: Remove this
+      router: appRouter as any, // FIXME: fix this
       createContext: (opts) =>
         createContext({
           opts,
