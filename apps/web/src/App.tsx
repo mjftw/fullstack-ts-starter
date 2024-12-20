@@ -6,7 +6,7 @@ import { trpc } from "./utils/trpc";
 
 function App() {
   const [count, setCount] = useState(0);
-  const users = trpc.findAllUsers.useQuery();
+  const users = trpc.users.findAll.useQuery();
 
   return (
     <>

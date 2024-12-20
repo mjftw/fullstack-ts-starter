@@ -1,7 +1,7 @@
 import { createTRPCRouter, publicProcedure } from '../trpc';
 
 export const usersRouter = createTRPCRouter({
-  findAllUsers: publicProcedure.query(
+  findAll: publicProcedure.query(
     async ({
       ctx: {
         services: { userService },
