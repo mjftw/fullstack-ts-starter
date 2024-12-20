@@ -11,7 +11,7 @@ export class TrpcMiddleware implements NestMiddleware {
 
   use(req: Request, res: Response, next: NextFunction) {
     trpcExpress.createExpressMiddleware({
-      router: appRouter as any, // FIXME: fix this
+      router: appRouter,
       createContext: (opts) =>
         createContext({
           opts,
