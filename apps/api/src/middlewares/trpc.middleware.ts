@@ -1,7 +1,7 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import * as trpcExpress from '@trpc/server/adapters/express';
-import { appRouter } from '../trpc/trpc';
+import { appRouter } from '../trpc/routers';
 import { createContext } from '../trpc/trpc';
 import { UserService } from 'src/services/userService';
 
