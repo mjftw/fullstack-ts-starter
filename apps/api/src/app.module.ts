@@ -34,6 +34,6 @@ export class AppModule implements NestModule {
       .apply(LoggerMiddleware)
       .forRoutes({ path: '*', method: RequestMethod.ALL })
       .apply(TrpcMiddleware)
-      .forRoutes({ path: 'trpc', method: RequestMethod.ALL });
+      .forRoutes({ path: 'trpc/*', method: RequestMethod.ALL });
   }
 }

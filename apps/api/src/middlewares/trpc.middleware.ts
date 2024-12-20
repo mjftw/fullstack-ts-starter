@@ -10,6 +10,11 @@ export class TrpcMiddleware implements NestMiddleware {
   constructor(private readonly userService: UserService) {}
 
   use(req: Request, res: Response, next: NextFunction) {
+    // Strip /trpc prefix from the URL path
+    if (req.url.startsWith('/trpc')) {
+      req.url = req.url.replace('/trpc', '');
+    }
+
     trpcExpress.createExpressMiddleware({
       router: appRouter,
       createContext: (opts) =>
