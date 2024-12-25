@@ -16,7 +16,7 @@ export class DrizzleService {
     new AsyncLocalStorage<DrizzleTransaction>();
 
   constructor(private readonly databaseDriver: DatabaseDriverService) {
-    this.drizzleClient = drizzle(this.databaseDriver.queryClient, {
+    this.drizzleClient = drizzle(this.databaseDriver.sql, {
       schema: schema,
     });
   }
