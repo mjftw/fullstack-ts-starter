@@ -136,5 +136,3 @@ The Transactor pattern serves to:
 3. **Atomic Operations**: Ensures multiple repository operations either all succeed or all fail together
 4. **Simplified Error Handling**: Provides consistent transaction rollback behavior across the application
 5. **Testing**: Makes it easier to mock and test transactional behavior in services
-
-## Attribution
