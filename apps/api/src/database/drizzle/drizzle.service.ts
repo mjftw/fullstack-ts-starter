@@ -1,9 +1,8 @@
 import { AsyncLocalStorage } from 'async_hooks';
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Injectable } from '@nestjs/common';
 import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
 import * as schema from './schema';
+import { DatabaseDriverService } from '../driver/databaseDriver.service';
 
 export type DrizzleClient = ReturnType<typeof drizzle<typeof schema>>;
 export type DrizzleTransaction = Parameters<
@@ -11,26 +10,15 @@ export type DrizzleTransaction = Parameters<
 >[0];
 
 @Injectable()
-export class DrizzleService implements OnModuleInit, OnModuleDestroy {
+export class DrizzleService {
   public readonly drizzleClient: DrizzleClient;
-  private readonly queryClient: postgres.Sql;
   private readonly asyncLocalStorage =
     new AsyncLocalStorage<DrizzleTransaction>();
 
-  constructor(private readonly configService: ConfigService) {
-    this.queryClient = postgres(
-      this.configService.getOrThrow<string>('DATABASE_URL'),
-    );
-    this.drizzleClient = drizzle(this.queryClient, { schema: schema });
-  }
-
-  async onModuleInit() {
-    // Connection is established when making the first query
-    await this.queryClient`SELECT 1`;
-  }
-
-  async onModuleDestroy() {
-    await this.queryClient.end();
+  constructor(private readonly databaseDriver: DatabaseDriverService) {
+    this.drizzleClient = drizzle(this.databaseDriver.queryClient, {
+      schema: schema,
+    });
   }
 
   // Resolve active transaction or fallback to base client
