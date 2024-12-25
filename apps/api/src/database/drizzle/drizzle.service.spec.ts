@@ -4,15 +4,21 @@ import { ConfigService } from '@nestjs/config';
 import { DrizzleService } from './drizzle.service';
 import { sql } from 'drizzle-orm';
 import { DatabaseDriverService } from '../driver/databaseDriver.service';
-
+import * as schema from './schema';
 describe('DrizzleService', () => {
-  let drizzle: DrizzleService;
+  let drizzle: DrizzleService<typeof schema>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         DatabaseDriverService,
-        DrizzleService,
+        {
+          provide: DrizzleService,
+          useFactory: (databaseDriver: DatabaseDriverService) => {
+            return new DrizzleService(databaseDriver, schema);
+          },
+          inject: [DatabaseDriverService],
+        },
         {
           provide: ConfigService,
           useValue: {
@@ -24,7 +30,7 @@ describe('DrizzleService', () => {
       ],
     }).compile();
 
-    drizzle = module.get<DrizzleService>(DrizzleService);
+    drizzle = module.get<DrizzleService<typeof schema>>(DrizzleService);
   });
 
   it('should be defined', () => {

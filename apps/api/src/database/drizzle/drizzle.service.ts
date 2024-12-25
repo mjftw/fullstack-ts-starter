@@ -1,33 +1,35 @@
 import { AsyncLocalStorage } from 'async_hooks';
 import { Injectable } from '@nestjs/common';
 import { drizzle } from 'drizzle-orm/postgres-js';
-import * as schema from './schema';
+import { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import { DatabaseDriverService } from '../driver/databaseDriver.service';
 
-export type DrizzleClient = ReturnType<typeof drizzle<typeof schema>>;
-export type DrizzleTransaction = Parameters<
-  Parameters<DrizzleClient['transaction']>[0]
->[0];
+export type DrizzleTransaction<TSchema extends Record<string, unknown>> =
+  Parameters<Parameters<PostgresJsDatabase<TSchema>['transaction']>[0]>[0];
 
 @Injectable()
-export class DrizzleService {
-  public readonly drizzleClient: DrizzleClient;
-  private readonly asyncLocalStorage =
-    new AsyncLocalStorage<DrizzleTransaction>();
+export class DrizzleService<TSchema extends Record<string, unknown>> {
+  public readonly drizzleClient: PostgresJsDatabase<TSchema>;
+  private readonly asyncLocalStorage = new AsyncLocalStorage<
+    DrizzleTransaction<TSchema>
+  >();
 
-  constructor(private readonly databaseDriver: DatabaseDriverService) {
+  constructor(
+    private readonly databaseDriver: DatabaseDriverService,
+    schema: TSchema,
+  ) {
     this.drizzleClient = drizzle(this.databaseDriver.sql, {
-      schema: schema,
+      schema,
     });
   }
 
   // Resolve active transaction or fallback to base client
-  get db(): DrizzleClient | DrizzleTransaction {
+  get db(): PostgresJsDatabase<TSchema> | DrizzleTransaction<TSchema> {
     return this.asyncLocalStorage.getStore() || this.drizzleClient;
   }
 
   async transaction<R>(
-    callback: (tx: DrizzleTransaction) => Promise<R>,
+    callback: (tx: DrizzleTransaction<TSchema>) => Promise<R>,
   ): Promise<R> {
     return this.drizzleClient.transaction((tx) => {
       return this.asyncLocalStorage.run(tx, () => callback(tx));
