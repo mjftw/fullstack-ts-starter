@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
-import { Mocked, vi } from 'vitest';
-import { validationSchemaForEnv } from '../config/environment-variables';
-import { User } from '../persistence/drizzle/schema';
+import { beforeEach, describe, it, Mocked, vi } from 'vitest';
+import { validateEnv } from '../config/environment-variables';
+import { User } from '../database/drizzle/schema';
 import { UsersRepository } from '../repository/users/usersRepository.service';
 import { UsersController } from './users.controller';
 
@@ -19,7 +19,7 @@ describe('UsersController', () => {
       imports: [
         ConfigModule.forRoot({
           isGlobal: true,
-          validationSchema: validationSchemaForEnv,
+          validate: () => validateEnv({ DATABASE_URL: 'test' }),
         }),
       ],
       controllers: [UsersController],

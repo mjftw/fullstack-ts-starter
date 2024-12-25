@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { AppController } from './app.controller';
 import { AppService } from '../app.service';
 import { ConfigModule } from '@nestjs/config';
-import { validationSchemaForEnv } from '../config/environment-variables';
+import { validateEnv } from '../config/environment-variables';
 
 describe('AppController', () => {
   let appController: AppController;
@@ -13,7 +13,7 @@ describe('AppController', () => {
       imports: [
         ConfigModule.forRoot({
           isGlobal: true,
-          validationSchema: validationSchemaForEnv,
+          validate: () => validateEnv({ DATABASE_URL: 'test' }),
         }),
       ],
       controllers: [AppController],
