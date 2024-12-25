@@ -85,4 +85,72 @@ describe('DrizzleService', () => {
     // so the user should not be in the database
     expect(users).toEqual([]);
   });
+
+  it('should handle nested transactions correctly', async () => {
+    const userData1 = { email: 'user1@test.com', name: 'User 1' };
+    const userData2 = { email: 'user2@test.com', name: 'User 2' };
+
+    await drizzle.transaction(async (outerTx) => {
+      await outerTx.insert(schema.usersTable).values(userData1);
+
+      // Nested transaction
+      await drizzle.transaction(async (innerTx) => {
+        await innerTx.insert(schema.usersTable).values(userData2);
+      });
+    });
+
+    const users = await drizzle.db.select().from(schema.usersTable);
+    expect(users).toHaveLength(2);
+    expect(users).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining(userData1),
+        expect.objectContaining(userData2),
+      ]),
+    );
+  });
+
+  it('should rollback nested transactions on failure', async () => {
+    const userData1 = { email: 'user1@test.com', name: 'User 1' };
+    const userData2 = { email: 'user2@test.com', name: 'User 2' };
+
+    await expect(
+      drizzle.transaction(async (outerTx) => {
+        await outerTx.insert(schema.usersTable).values(userData1);
+
+        // Nested transaction that fails
+        await drizzle.transaction(async (innerTx) => {
+          await innerTx.insert(schema.usersTable).values(userData2);
+          throw new Error('Inner transaction failed');
+        });
+      }),
+    ).rejects.toThrow('Inner transaction failed');
+
+    const users = await drizzle.db.select().from(schema.usersTable);
+    expect(users).toEqual([]);
+  });
+
+  it('should allow outer transaction to succeed when inner transaction fails but is caught', async () => {
+    const outerUserData = { email: 'outer@test.com', name: 'Outer User' };
+    const innerUserData = { email: 'inner@test.com', name: 'Inner User' };
+
+    await drizzle.transaction(async (outerTx) => {
+      await outerTx.insert(schema.usersTable).values(outerUserData);
+
+      try {
+        await drizzle.transaction(async (innerTx) => {
+          await innerTx.insert(schema.usersTable).values(innerUserData);
+          throw new Error('Inner transaction error');
+        });
+      } catch (error) {
+        // Inner transaction error is caught, allowing outer transaction to continue
+        expect(error.message).toBe('Inner transaction error');
+      }
+    });
+
+    const users = await drizzle.db.select().from(schema.usersTable);
+
+    // Only the outer transaction's user should exist
+    expect(users).toHaveLength(1);
+    expect(users[0]).toMatchObject(outerUserData);
+  });
 });
