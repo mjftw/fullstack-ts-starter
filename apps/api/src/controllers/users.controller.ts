@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body } from '@nestjs/common';
-import { InsertUser, User } from '../persistence/drizzle/schema';
+import { InsertUser, User } from '../database/drizzle/schema';
 import { UsersRepository } from '../repository/users/usersRepository.service';
 
 @Controller('users')

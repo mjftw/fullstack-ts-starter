@@ -8,7 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './controllers/app.controller';
 import { AppService } from './app.service';
 import { validateEnv } from './config/environment-variables';
-import { DatabaseModule } from './persistence/database.module';
+import { DatabaseModule } from './database/database.module';
 import { RepositoriesModule } from './repository/repositories.module';
 import { UsersController } from './controllers/users.controller';
 import { ServicesModule } from './services/services.module';

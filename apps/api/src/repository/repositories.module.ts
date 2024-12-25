@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { DatabaseModule } from 'src/persistence/database.module';
+import { DatabaseModule } from 'src/database/database.module';
 import { UsersRepository } from './users/usersRepository.service';
-import { Transactor } from 'src/persistence/drizzle/transactor.service';
+import { Transactor } from 'src/database/drizzle/transactor.service';
 
 @Module({
   imports: [DatabaseModule],
