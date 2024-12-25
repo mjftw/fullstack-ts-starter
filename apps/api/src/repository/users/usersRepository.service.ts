@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { DrizzleService } from '../../persistence/drizzle/drizzle.service';
-import { InsertUser, User, usersTable } from '../../persistence/drizzle/schema';
+import { DrizzleService } from '../../database/drizzle/drizzle.service';
+import { InsertUser, User, usersTable } from '../../database/drizzle/schema';
 
 @Injectable()
 export class UsersRepository {

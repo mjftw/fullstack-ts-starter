@@ -71,3 +71,68 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+## Database Transactions
+
+The database layer is structured in three main components:
+
+### Overview
+
+This project implements a robust transaction management system using two key components:
+
+1. `DrizzleService`: Provides low-level transaction capabilities with support for:
+
+   - Single transactions
+   - Nested transactions (uses savepoints under the hood)
+   - Automatic rollback on errors
+   - Transaction isolation
+   - Provides database access to Repositories through its `db` property
+
+2. `Transactor`: A higher-level abstraction that:
+
+   - Maintains service layer isolation from database implementation
+   - Enables atomic operations across multiple repositories
+   - Simplifies transaction management in business logic
+
+3. `DatabaseDriver`: The lowest-level component that:
+   - Manages the raw database connection
+   - Handles connection lifecycle (connect/disconnect)
+   - Provides the SQL client to DrizzleService
+   - Validates database configuration
+
+### How Transactions Work
+
+The transaction system supports:
+
+```typescript
+// Basic transaction
+await transactor.runInTransaction(async () => {
+  await userService.createUser(userData);
+});
+
+// Nested transactions
+await transactor.runInTransaction(async () => {
+  await userService.createUser(userData1);
+
+  try {
+    await transactor.runInTransaction(async () => {
+      await userService.createUser(userData2);
+      throw new Error('Inner transaction fails');
+    });
+  } catch (error) {
+    // Inner transaction rolls back
+    // Outer transaction can continue
+  }
+});
+```
+
+### Purpose of the Transactor Pattern
+
+The Transactor pattern serves to:
+
+1. **Maintain Layer Isolation**: Services interact with the database only through Repositories, but sometimes we need to perform multiple database actions atomically. The Transactor exists for this purpose - it allows
+   Services to group database interactions taken by Repositories into transactions.
+2. **Repository Access**: Repositories use DrizzleService to perform database operations
+3. **Atomic Operations**: Ensures multiple repository operations either all succeed or all fail together
+4. **Simplified Error Handling**: Provides consistent transaction rollback behavior across the application
+5. **Testing**: Makes it easier to mock and test transactional behavior in services
