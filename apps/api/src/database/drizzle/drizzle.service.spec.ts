@@ -33,7 +33,7 @@ describe('DrizzleService', () => {
     drizzle = module.get<DrizzleService<typeof schema>>(DrizzleService);
 
     // Clear the database before each test
-    await drizzle.db.execute(sql`DELETE FROM ${schema.usersTable}`);
+    await drizzle.db.delete(schema.usersTable);
   });
 
   it('should be defined', () => {
