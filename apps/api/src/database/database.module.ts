@@ -6,6 +6,7 @@ import * as schema from './drizzle/schema';
 
 @Module({
   providers: [
+    DatabaseDriverService,
     {
       provide: DrizzleService,
       useFactory: (databaseDriver: DatabaseDriverService) => {
