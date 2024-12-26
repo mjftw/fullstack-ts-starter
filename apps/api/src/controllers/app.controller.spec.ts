@@ -1,30 +1,26 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, expect } from 'vitest';
 import { AppController } from './app.controller';
 import { AppService } from '../app.service';
 import { ConfigModule } from '@nestjs/config';
 import { validateEnv } from '../config/environment-variables';
+import { createModuleTest } from 'test/utils/vitest';
 
 describe('AppController', () => {
-  let appController: AppController;
-
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-          validate: () => validateEnv({ DATABASE_URL: 'test' }),
-        }),
-      ],
-      controllers: [AppController],
-      providers: [AppService],
-    }).compile();
-
-    appController = module.get<AppController>(AppController);
+  const test = createModuleTest({
+    imports: [
+      ConfigModule.forRoot({
+        isGlobal: true,
+        validate: () => validateEnv({ DATABASE_URL: 'test' }),
+      }),
+    ],
+    controllers: [AppController],
+    providers: [AppService],
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', async () => {
+    test('should return "Hello World!"', async ({ module }) => {
+      const appController = module.get(AppController);
+
       expect(await appController.getHello()).toEqual({
         message: 'Hello World',
       });
