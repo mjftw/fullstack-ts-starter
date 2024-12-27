@@ -4,6 +4,8 @@ import path from 'path';
 import postgres from 'postgres';
 import { swapDatabaseInURL } from 'src/database/utils';
 
+const TEMPLATE_DB_NAME = 'template_database' as const;
+
 export default async function setup() {
   if (!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL is not set');
@@ -11,37 +13,33 @@ export default async function setup() {
 
   const adminSql = postgres(process.env.DATABASE_URL);
 
-  console.log('Creating fresh template database...');
-
-  // Create a fresh template database
-  await adminSql`UPDATE pg_database SET datistemplate = false WHERE datname = 'template_database';`;
-  await adminSql`DROP DATABASE IF EXISTS template_database;`;
-  await adminSql`CREATE DATABASE template_database;`;
-
-  console.log('Template database created');
-
+  // Reset and create template database
+  await resetTemplateDatabase(adminSql);
   await adminSql.end();
 
-  const templateDatabaseUrl = swapDatabaseInURL(
-    process.env.DATABASE_URL,
-    'template_database',
-  );
-  const templateSql = postgres(templateDatabaseUrl);
-  const templateDB = drizzle(templateSql);
+  // Setup and migrate template database
+  const templateConfig = await setupTemplateDatabase(process.env.DATABASE_URL);
+  await templateConfig.sql.end();
+}
 
-  console.log('Applying migrations to template database...');
+async function resetTemplateDatabase(sql: postgres.Sql) {
+  // Need to set to not being a template database in order to delete it
+  await sql`UPDATE pg_database SET datistemplate = false WHERE datname = '${sql.unsafe(TEMPLATE_DB_NAME)}'`;
+  await sql`DROP DATABASE IF EXISTS ${sql.unsafe(TEMPLATE_DB_NAME)}`;
+  await sql`CREATE DATABASE ${sql.unsafe(TEMPLATE_DB_NAME)}`;
+}
 
-  await migrate(templateDB, {
+async function setupTemplateDatabase(dbUrl: string) {
+  const templateUrl = swapDatabaseInURL(dbUrl, TEMPLATE_DB_NAME);
+  const sql = postgres(templateUrl);
+  const db = drizzle(sql);
+
+  await migrate(db, {
     migrationsFolder: path.join(__dirname, '..', 'drizzle'),
   });
 
-  console.log('Migrations applied');
+  // Mark the database as a template
+  await sql`UPDATE pg_database SET datistemplate = true WHERE datname = '${sql.unsafe(TEMPLATE_DB_NAME)}'`;
 
-  console.log('Marking template database as template...');
-
-  await templateSql`UPDATE pg_database SET datistemplate = true WHERE datname = 'template_database';`;
-
-  console.log('Template database marked as template');
-
-  templateSql.end();
+  return { sql, db };
 }
