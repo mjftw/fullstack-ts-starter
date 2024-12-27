@@ -11,12 +11,18 @@ export function createModuleTest(
   },
 ) {
   const moduleTest = test.extend<{ module: TestingModule }>({
-    module: async ({}, use) => {
+    module: async ({ onTestFinished }, use) => {
       const module = await Test.createTestingModule(
         createTestingModuleArg,
       ).compile();
 
-      return use(module);
+      await module.init();
+
+      use(module);
+
+      onTestFinished(() => {
+        module.close();
+      });
     },
   });
 
