@@ -1,4 +1,4 @@
-import { describe, expect, vi } from 'vitest';
+import { describe, expect } from 'vitest';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ProdDrizzleService } from './prodDrizzle.service';
 import { sql } from 'drizzle-orm';

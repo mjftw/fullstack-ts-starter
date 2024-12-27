@@ -174,7 +174,7 @@ describe.concurrent('Transactor', () => {
         });
       } catch (error) {
         // Inner transaction error is caught, allowing outer transaction to continue
-        expect(error.message).toBe('Inner transaction error');
+        expect((error as Error).message).toBe('Inner transaction error');
       }
     });
 
