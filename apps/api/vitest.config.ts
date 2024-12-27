@@ -2,6 +2,9 @@ import { defineConfig } from 'vitest/config';
 import { resolve } from 'path';
 import swc from 'unplugin-swc';
 
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.test' });
+
 export default defineConfig({
   resolve: {
     alias: {
@@ -19,16 +22,11 @@ export default defineConfig({
           decorators: true,
         },
       },
-    }) as any,
+    }),
   ],
   test: {
     globals: true,
-    // TODO: Remove this once we have properly isolated db in tests
-    // This is currently needed to avoid race conditions in the db
-    // due to tests sharing the same db instance and running in parallel
-    maxWorkers: 1,
-    minWorkers: 1,
-    setupFiles: ['test/testSetup.ts'],
+    globalSetup: ['test/globalSetup.ts'],
     environment: 'node',
     include: ['src/**/*.spec.ts'],
     coverage: {

@@ -4,7 +4,7 @@ import path from 'path';
 import postgres from 'postgres';
 import { swapDatabaseInURL } from 'src/database/utils';
 
-beforeAll(async () => {
+export default async function setup() {
   if (!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL is not set');
   }
@@ -44,4 +44,4 @@ beforeAll(async () => {
   console.log('Template database marked as template');
 
   templateSql.end();
-});
+}
