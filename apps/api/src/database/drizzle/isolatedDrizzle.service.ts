@@ -9,9 +9,6 @@ import { randomUUID } from 'crypto';
 import { swapDatabaseInURL } from '../utils';
 import { sql } from 'drizzle-orm';
 
-/** This DrizzleService implementation gives a fully isolated database, useful for testing.
- * It is cloned from a template database, which must exist in the main database beforehand.
- */
 type DatabaseConfig = {
   readonly DATABASE_URL: string;
 };
@@ -22,6 +19,9 @@ class DrizzleInitializationError extends Error {
   }
 }
 
+/** This DrizzleService implementation gives a fully isolated database, useful for testing.
+ * It is cloned from a template database, which must exist in the main database beforehand.
+ */
 @Injectable()
 export class IsolatedDrizzleService<TSchema extends Record<string, unknown>>
   implements DrizzleService<TSchema>, OnModuleInit, OnModuleDestroy
