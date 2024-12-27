@@ -1,18 +1,17 @@
 import { Module } from '@nestjs/common';
 import { DrizzleService } from './drizzle/drizzle.service';
 import { Transactor } from './drizzle/transactor.service';
-import { DatabaseDriverService } from './driver/databaseDriver.service';
 import * as schema from './drizzle/schema';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   providers: [
-    DatabaseDriverService,
     {
       provide: DrizzleService,
-      useFactory: (databaseDriver: DatabaseDriverService) => {
-        return new DrizzleService(databaseDriver, schema);
+      useFactory: (config: ConfigService) => {
+        return new DrizzleService(config, schema);
       },
-      inject: [DatabaseDriverService],
+      inject: [ConfigService],
     },
     Transactor,
   ],
