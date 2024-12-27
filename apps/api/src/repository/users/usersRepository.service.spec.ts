@@ -1,40 +1,35 @@
 import { describe, expect } from 'vitest';
-import { ConfigService } from '@nestjs/config';
-import { DrizzleService } from '../../database/drizzle/prodDrizzle.service';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersRepository } from './usersRepository.service';
-import { DatabaseDriverService } from '../../database/driver/databaseDriver.service';
 import * as schema from '../../database/drizzle/schema';
 import { createModuleTest } from 'test/utils/vitest';
+import { DrizzleService } from 'src/database/drizzle/drizzle.service';
+import { IsolatedDrizzleService } from 'src/database/drizzle/isolatedDrizzle.service';
 
-describe('UsersRepository', () => {
-  const test = createModuleTest(
-    {
-      providers: [
-        DatabaseDriverService,
-        {
-          provide: DrizzleService,
-          useFactory: (databaseDriver: DatabaseDriverService) => {
-            return new DrizzleService(databaseDriver, schema);
-          },
-          inject: [DatabaseDriverService],
+describe.concurrent('UsersRepository', () => {
+  const test = createModuleTest({
+    providers: [
+      {
+        provide: DrizzleService,
+        useFactory: (config: ConfigService) => {
+          return new IsolatedDrizzleService(config, schema);
         },
-        {
-          provide: ConfigService,
-          useValue: {
-            getOrThrow: () => 'postgres://test:test@localhost:5432/mydb',
-          },
-        },
-        UsersRepository,
-      ],
-    },
-    {
-      afterEach: async ({ module }) => {
-        const drizzle =
-          module.get<DrizzleService<typeof schema>>(DrizzleService);
-        await drizzle.db.delete(schema.usersTable);
+        inject: [ConfigService],
       },
-    },
-  );
+      {
+        provide: UsersRepository,
+        useFactory: (drizzleService: DrizzleService<typeof schema>) => {
+          return new UsersRepository(drizzleService);
+        },
+        inject: [DrizzleService],
+      },
+    ],
+    imports: [
+      ConfigModule.forFeature(() => ({
+        DATABASE_URL: process.env.DATABASE_URL,
+      })),
+    ],
+  });
 
   test('should be defined', ({ module }) => {
     const usersRepository = module.get<UsersRepository>(UsersRepository);

@@ -1,50 +1,37 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { ConfigService } from '@nestjs/config';
-import { DrizzleService } from './prodDrizzle.service';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { DrizzleService } from './drizzle.service';
 import { Transactor } from './transactor.service';
-import { DatabaseDriverService } from '../driver/databaseDriver.service';
 import * as schema from './schema';
+import { IsolatedDrizzleService } from './isolatedDrizzle.service';
+import { createModuleTest } from 'test/utils/vitest';
 
-describe('Transactor', () => {
-  let transactor: Transactor;
-  let drizzle: DrizzleService<typeof schema>;
-
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        DatabaseDriverService,
-        {
-          provide: DrizzleService,
-          useFactory: (databaseDriver: DatabaseDriverService) => {
-            return new DrizzleService(databaseDriver, schema);
-          },
-          inject: [DatabaseDriverService],
+describe.concurrent('Transactor', () => {
+  const test = createModuleTest({
+    providers: [
+      {
+        provide: DrizzleService,
+        useFactory: (config: ConfigService) => {
+          return new IsolatedDrizzleService(config, schema);
         },
-        {
-          provide: ConfigService,
-          useValue: {
-            getOrThrow: vi
-              .fn()
-              .mockReturnValue('postgres://test:test@localhost:5432/mydb'),
-          },
-        },
-        Transactor,
-      ],
-    }).compile();
-
-    transactor = module.get<Transactor>(Transactor);
-    drizzle = module.get<DrizzleService<typeof schema>>(DrizzleService);
-
-    // Clear the database before each test
-    await drizzle.db.delete(schema.usersTable);
+        inject: [ConfigService],
+      },
+      Transactor,
+    ],
+    imports: [
+      ConfigModule.forFeature(() => ({
+        DATABASE_URL: process.env.DATABASE_URL,
+      })),
+    ],
   });
 
-  it('should be defined', () => {
+  test('should be defined', ({ module }) => {
+    const transactor = module.get(Transactor);
     expect(transactor).toBeDefined();
   });
 
-  it('should successfully execute transaction', async () => {
+  test('should successfully execute transaction', async ({ module }) => {
+    const transactor = module.get(Transactor);
+    const drizzle = module.get(DrizzleService);
     const userData = {
       email: 'test@test.com',
       name: 'John',
@@ -58,7 +45,10 @@ describe('Transactor', () => {
     expect(user).toMatchObject(userData);
   });
 
-  it('should rollback failed transactions', async () => {
+  test('should rollback failed transactions', async ({ module }) => {
+    const transactor = module.get(Transactor);
+    const drizzle = module.get(DrizzleService);
+
     await expect(
       transactor.runInTransaction(async () => {
         await drizzle.db
@@ -84,7 +74,10 @@ describe('Transactor', () => {
     expect(users).toEqual([]);
   });
 
-  it('should maintain transaction isolation', async () => {
+  test('should maintain transaction isolation', async ({ module }) => {
+    const transactor = module.get(Transactor);
+    const drizzle = module.get(DrizzleService);
+
     const isolationTest = async () => {
       await transactor.runInTransaction(async () => {
         await drizzle.db
@@ -109,7 +102,12 @@ describe('Transactor', () => {
     expect(users).toEqual([]);
   });
 
-  it('should handle nested transactions through transactor correctly', async () => {
+  test('should handle nested transactions through transactor correctly', async ({
+    module,
+  }) => {
+    const transactor = module.get(Transactor);
+    const drizzle = module.get(DrizzleService);
+
     const userData1 = { email: 'user1@test.com', name: 'User 1' };
     const userData2 = { email: 'user2@test.com', name: 'User 2' };
 
@@ -132,7 +130,12 @@ describe('Transactor', () => {
     );
   });
 
-  it('should rollback nested transactions on inner failure', async () => {
+  test('should rollback nested transactions on inner failure', async ({
+    module,
+  }) => {
+    const transactor = module.get(Transactor);
+    const drizzle = module.get(DrizzleService);
+
     const userData1 = { email: 'user1@test.com', name: 'User 1' };
     const userData2 = { email: 'user2@test.com', name: 'User 2' };
 
@@ -152,7 +155,12 @@ describe('Transactor', () => {
     expect(users).toEqual([]);
   });
 
-  it('should allow outer transaction to succeed when inner transaction fails but is caught', async () => {
+  test('should allow outer transaction to succeed when inner transaction fails but is caught', async ({
+    module,
+  }) => {
+    const transactor = module.get(Transactor);
+    const drizzle = module.get(DrizzleService);
+
     const outerUserData = { email: 'outer@test.com', name: 'Outer User' };
     const innerUserData = { email: 'inner@test.com', name: 'Inner User' };
 
