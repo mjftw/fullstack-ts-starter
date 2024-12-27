@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ConfigService } from '@nestjs/config';
-import { DrizzleService } from './drizzle.service';
+import { DrizzleService } from './prodDrizzle.service';
 import { Transactor } from './transactor.service';
 import { DatabaseDriverService } from '../driver/databaseDriver.service';
 import * as schema from './schema';

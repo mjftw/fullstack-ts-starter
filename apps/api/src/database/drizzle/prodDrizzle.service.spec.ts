@@ -1,9 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ConfigService } from '@nestjs/config';
-import { DrizzleService } from './drizzle.service';
+import { ProdDrizzleService } from './prodDrizzle.service';
 import { sql } from 'drizzle-orm';
 import * as schema from './schema';
+import { DrizzleService } from './drizzle.service';
 describe('DrizzleService', () => {
   let drizzle: DrizzleService<typeof schema>;
 
@@ -13,7 +14,7 @@ describe('DrizzleService', () => {
         {
           provide: DrizzleService,
           useFactory: (config: ConfigService) => {
-            return new DrizzleService(config, schema);
+            return new ProdDrizzleService(config, schema);
           },
         },
         {
@@ -140,7 +141,7 @@ describe('DrizzleService', () => {
         });
       } catch (error) {
         // Inner transaction error is caught, allowing outer transaction to continue
-        expect(error.message).toBe('Inner transaction error');
+        expect((error as Error).message).toBe('Inner transaction error');
       }
     });
 
