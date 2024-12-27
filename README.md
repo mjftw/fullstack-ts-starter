@@ -9,10 +9,11 @@ This is fullstack turborepo starter. It comes with the following features.
 - ✅ React + Vite
 - ✅ tRPC
 - ✅ Testing using Vitest
+  - ✅ Concurrent isolated database testing 
 - ✅ Reverse Proxy using Nginx
 - ✅ Docker Integration
 - ✅ Postgres Database
-- ✅ Package scripts using NPS
+
 
 ## What's inside?
 
