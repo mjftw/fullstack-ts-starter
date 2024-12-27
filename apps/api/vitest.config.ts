@@ -28,6 +28,7 @@ export default defineConfig({
     // due to tests sharing the same db instance and running in parallel
     maxWorkers: 1,
     minWorkers: 1,
+    setupFiles: ['test/testSetup.ts'],
     environment: 'node',
     include: ['src/**/*.spec.ts'],
     coverage: {
