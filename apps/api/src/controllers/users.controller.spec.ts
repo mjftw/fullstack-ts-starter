@@ -1,41 +1,28 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule } from '@nestjs/config';
-import { beforeEach, describe, it, Mocked, vi } from 'vitest';
-import { validateEnv } from '../config/environment-variables';
+import { describe, Mocked, vi } from 'vitest';
 import { User } from '../database/drizzle/schema';
 import { UsersRepository } from '../repository/users/usersRepository.service';
 import { UsersController } from './users.controller';
+import { createModuleTest } from 'test/utils/vitest';
 
 describe('UsersController', () => {
-  let usersController: UsersController;
-  let usersRepository: { findAll: Mocked<UsersRepository>['findAll'] };
-
-  beforeEach(async () => {
-    usersRepository = {
-      findAll: vi.fn().mockResolvedValue([]),
-    };
-
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-          validate: () => validateEnv({ DATABASE_URL: 'test' }),
-        }),
-      ],
-      controllers: [UsersController],
-      providers: [
-        {
-          provide: UsersRepository,
-          useValue: usersRepository,
+  const test = createModuleTest({
+    controllers: [UsersController],
+    providers: [
+      {
+        provide: UsersRepository,
+        useValue: {
+          findAll: vi.fn(),
         },
-      ],
-    }).compile();
-
-    usersController = module.get<UsersController>(UsersController);
+      },
+    ],
   });
 
   describe('users', () => {
-    it('should return all users', async () => {
+    test('should return all users', async ({ module }) => {
+      const usersController = module.get(UsersController);
+      const usersRepository =
+        module.get<Mocked<UsersRepository>>(UsersRepository);
+
       const mockUsers: User[] = [
         {
           id: '6b147940-9676-4e73-9b61-c2d44a5563d4',
@@ -56,7 +43,13 @@ describe('UsersController', () => {
       expect(usersRepository.findAll).toHaveBeenCalled();
     });
 
-    it('should handle empty user list', async () => {
+    test('should handle empty user list', async ({ module }) => {
+      const usersController = module.get(UsersController);
+      const usersRepository =
+        module.get<Mocked<UsersRepository>>(UsersRepository);
+
+      usersRepository.findAll.mockResolvedValue([]);
+
       const result = await usersController.findAll();
 
       expect(result).toEqual([]);

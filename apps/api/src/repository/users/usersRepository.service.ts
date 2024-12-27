@@ -1,21 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { DrizzleService } from '../../database/drizzle/drizzle.service';
-import { InsertUser, User, usersTable } from '../../database/drizzle/schema';
-
+import * as schema from '../../database/drizzle/schema';
 @Injectable()
 export class UsersRepository {
-  constructor(private readonly drizzleService: DrizzleService) {}
+  constructor(private readonly drizzleService: DrizzleService<typeof schema>) {}
 
-  async create(user: InsertUser): Promise<User> {
+  async create(user: schema.InsertUser): Promise<schema.User> {
     const [createdUser] = await this.drizzleService.db
-      .insert(usersTable)
+      .insert(schema.usersTable)
       .values(user)
       .returning();
 
     return createdUser;
   }
 
-  async findAll(): Promise<User[]> {
-    return await this.drizzleService.db.select().from(usersTable);
+  async findAll(): Promise<schema.User[]> {
+    return await this.drizzleService.db.select().from(schema.usersTable);
   }
 }

@@ -14,11 +14,11 @@ services:
       - "host.docker.internal:host-gateway"
 
   postgres:
-    image: postgres:15
+    image: postgres:16.1
     environment:
-      - POSTGRES_DB=mydb
-      - POSTGRES_USER=test
-      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:

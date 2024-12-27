@@ -1,11 +1,12 @@
+import { describe, expect } from 'vitest';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { DrizzleService } from './drizzle.service';
-import { Transactor } from './transactor.service';
+import { sql } from 'drizzle-orm';
 import * as schema from './schema';
+import { DrizzleService } from './drizzle.service';
 import { IsolatedDrizzleService } from './isolatedDrizzle.service';
 import { createModuleTest } from 'test/utils/vitest';
 
-describe.concurrent('Transactor', () => {
+describe.concurrent('IsolatedDrizzleService', () => {
   const test = createModuleTest({
     providers: [
       {
@@ -15,7 +16,6 @@ describe.concurrent('Transactor', () => {
         },
         inject: [ConfigService],
       },
-      Transactor,
     ],
     imports: [
       ConfigModule.forFeature(() => ({
@@ -25,33 +25,37 @@ describe.concurrent('Transactor', () => {
   });
 
   test('should be defined', ({ module }) => {
-    const transactor = module.get(Transactor);
-    expect(transactor).toBeDefined();
+    const drizzle = module.get<DrizzleService<typeof schema>>(DrizzleService);
+    expect(drizzle).toBeDefined();
   });
 
-  test('should successfully execute transaction', async ({ module }) => {
-    const transactor = module.get(Transactor);
-    const drizzle = module.get(DrizzleService);
+  test('should allow querying', async ({ module }) => {
+    const drizzle = module.get<DrizzleService<typeof schema>>(DrizzleService);
+    const result = await drizzle.db.execute(sql`SELECT 1;`);
+    expect(result).toEqual([{ '?column?': 1 }]);
+  });
+
+  test('should apply successful transactions', async ({ module }) => {
+    const drizzle = module.get<DrizzleService<typeof schema>>(DrizzleService);
     const userData = {
       email: 'test@test.com',
       name: 'John',
     };
 
-    await transactor.runInTransaction(async () => {
-      await drizzle.db.insert(schema.usersTable).values(userData);
+    await drizzle.transaction(async (tx) => {
+      await tx.insert(schema.usersTable).values(userData);
     });
 
     const [user] = await drizzle.db.select().from(schema.usersTable);
+
     expect(user).toMatchObject(userData);
   });
 
   test('should rollback failed transactions', async ({ module }) => {
-    const transactor = module.get(Transactor);
-    const drizzle = module.get(DrizzleService);
-
+    const drizzle = module.get<DrizzleService<typeof schema>>(DrizzleService);
     await expect(
-      transactor.runInTransaction(async () => {
-        await drizzle.db
+      drizzle.transaction(async (tx) => {
+        await tx
           .insert(schema.usersTable)
           .values({ name: 'Arthur Dent', email: 'test@test.com' });
 
@@ -74,49 +78,17 @@ describe.concurrent('Transactor', () => {
     expect(users).toEqual([]);
   });
 
-  test('should maintain transaction isolation', async ({ module }) => {
-    const transactor = module.get(Transactor);
-    const drizzle = module.get(DrizzleService);
-
-    const isolationTest = async () => {
-      await transactor.runInTransaction(async () => {
-        await drizzle.db
-          .insert(schema.usersTable)
-          .values({ name: 'Test User', email: 'isolation@test.com' });
-
-        // This should be visible inside the transaction
-        const [userInTx] = await drizzle.db.select().from(schema.usersTable);
-        expect(userInTx).toMatchObject({
-          name: 'Test User',
-          email: 'isolation@test.com',
-        });
-
-        throw new Error('Rollback transaction');
-      });
-    };
-
-    await expect(isolationTest()).rejects.toThrow('Rollback transaction');
-
-    // After rollback, the user should not exist
-    const users = await drizzle.db.select().from(schema.usersTable);
-    expect(users).toEqual([]);
-  });
-
-  test('should handle nested transactions through transactor correctly', async ({
-    module,
-  }) => {
-    const transactor = module.get(Transactor);
-    const drizzle = module.get(DrizzleService);
-
+  test('should handle nested transactions correctly', async ({ module }) => {
+    const drizzle = module.get<DrizzleService<typeof schema>>(DrizzleService);
     const userData1 = { email: 'user1@test.com', name: 'User 1' };
     const userData2 = { email: 'user2@test.com', name: 'User 2' };
 
-    await transactor.runInTransaction(async () => {
-      await drizzle.db.insert(schema.usersTable).values(userData1);
+    await drizzle.transaction(async (outerTx) => {
+      await outerTx.insert(schema.usersTable).values(userData1);
 
       // Nested transaction
-      await transactor.runInTransaction(async () => {
-        await drizzle.db.insert(schema.usersTable).values(userData2);
+      await drizzle.transaction(async (innerTx) => {
+        await innerTx.insert(schema.usersTable).values(userData2);
       });
     });
 
@@ -130,22 +102,18 @@ describe.concurrent('Transactor', () => {
     );
   });
 
-  test('should rollback nested transactions on inner failure', async ({
-    module,
-  }) => {
-    const transactor = module.get(Transactor);
-    const drizzle = module.get(DrizzleService);
-
+  test('should rollback nested transactions on failure', async ({ module }) => {
+    const drizzle = module.get<DrizzleService<typeof schema>>(DrizzleService);
     const userData1 = { email: 'user1@test.com', name: 'User 1' };
     const userData2 = { email: 'user2@test.com', name: 'User 2' };
 
     await expect(
-      transactor.runInTransaction(async () => {
-        await drizzle.db.insert(schema.usersTable).values(userData1);
+      drizzle.transaction(async (outerTx) => {
+        await outerTx.insert(schema.usersTable).values(userData1);
 
         // Nested transaction that fails
-        await transactor.runInTransaction(async () => {
-          await drizzle.db.insert(schema.usersTable).values(userData2);
+        await drizzle.transaction(async (innerTx) => {
+          await innerTx.insert(schema.usersTable).values(userData2);
           throw new Error('Inner transaction failed');
         });
       }),
@@ -158,18 +126,16 @@ describe.concurrent('Transactor', () => {
   test('should allow outer transaction to succeed when inner transaction fails but is caught', async ({
     module,
   }) => {
-    const transactor = module.get(Transactor);
-    const drizzle = module.get(DrizzleService);
-
+    const drizzle = module.get<DrizzleService<typeof schema>>(DrizzleService);
     const outerUserData = { email: 'outer@test.com', name: 'Outer User' };
     const innerUserData = { email: 'inner@test.com', name: 'Inner User' };
 
-    await transactor.runInTransaction(async () => {
-      await drizzle.db.insert(schema.usersTable).values(outerUserData);
+    await drizzle.transaction(async (outerTx) => {
+      await outerTx.insert(schema.usersTable).values(outerUserData);
 
       try {
-        await transactor.runInTransaction(async () => {
-          await drizzle.db.insert(schema.usersTable).values(innerUserData);
+        await drizzle.transaction(async (innerTx) => {
+          await innerTx.insert(schema.usersTable).values(innerUserData);
           throw new Error('Inner transaction error');
         });
       } catch (error) {
