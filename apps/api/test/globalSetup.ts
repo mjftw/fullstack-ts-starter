@@ -6,7 +6,7 @@ import { swapDatabaseInURL } from 'src/database/utils';
 
 const TEMPLATE_DB_NAME = 'template_database' as const;
 
-/** Vitest global setup function */
+/** Vitest global setup function. Runs once before all tests. */
 export default async function setup() {
   if (!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL is not set');

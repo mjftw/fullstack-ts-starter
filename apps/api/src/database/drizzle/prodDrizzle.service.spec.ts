@@ -1,5 +1,5 @@
 import { describe, expect, vi } from 'vitest';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ProdDrizzleService } from './prodDrizzle.service';
 import { sql } from 'drizzle-orm';
 import * as schema from './schema';
@@ -19,14 +19,11 @@ describe.sequential('ProdDrizzleService', () => {
           },
           inject: [ConfigService],
         },
-        {
-          provide: ConfigService,
-          useValue: {
-            getOrThrow: vi
-              .fn()
-              .mockReturnValue('postgres://test:test@localhost:5432/mydb'),
-          },
-        },
+      ],
+      imports: [
+        ConfigModule.forFeature(() => ({
+          DATABASE_URL: process.env.DATABASE_URL,
+        })),
       ],
     },
     {
