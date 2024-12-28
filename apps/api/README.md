@@ -289,3 +289,9 @@ describe('MyTest', () => {
 For examples of the isolation in action, see the [IsolatedDrizzleService tests](src/database/drizzle/isolatedDrizzle.service.spec.ts).
 
 This isolation strategy ensures reliable and maintainable tests while maintaining good performance through PostgreSQL's template feature.
+
+## NestJS Devtools
+
+The [NestJS Devtools](https://docs.nestjs.com/devtools/overview) are available to introspect the running app.
+The Devtools are exposed on port 5003 when the app is running locally, and you can connect by going to https://devtools.nestjs.com/.
+This does however require a paid subscription to access.
