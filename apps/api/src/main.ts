@@ -6,7 +6,10 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 declare const module: any;
 async function bootstrap() {
   const logger = new Logger('EntryPoint');
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    // Collect metadata necessary for Nest Devtools to visualise the dependency graph.
+    snapshot: process.env.NODE_ENV !== 'production',
+  });
   app.enableCors();
 
   const config = new DocumentBuilder()

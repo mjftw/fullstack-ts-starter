@@ -14,12 +14,17 @@ import { UsersController } from './controllers/users.controller';
 import { ServicesModule } from './services/services.module';
 import { TrpcMiddleware } from './middlewares/trpc.middleware';
 import { LoggerMiddleware } from './middlewares/logging.middleware';
+import { DevtoolsModule } from '@nestjs/devtools-integration';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       validate: validateEnv,
+    }),
+    DevtoolsModule.register({
+      http: process.env.NODE_ENV !== 'production',
+      port: 5003,
     }),
     DatabaseModule,
     RepositoriesModule,
