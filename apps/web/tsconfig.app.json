@@ -20,7 +20,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "paths": {
+      "@api/*": ["../api/src/*"]
+    }
   },
+  "references": [{ "path": "../api/tsconfig.types.json" }],
   "include": ["src"]
 }
