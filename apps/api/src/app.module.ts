@@ -14,6 +14,7 @@ import { UsersController } from './controllers/users.controller';
 import { ServicesModule } from './services/services.module';
 import { TrpcMiddleware } from './middlewares/trpc.middleware';
 import { LoggerMiddleware } from './middlewares/logging.middleware';
+import { StaticMiddleware } from './middlewares/static.middleware';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
 
 @Module({
@@ -37,8 +38,15 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(LoggerMiddleware)
-      .forRoutes({ path: '*', method: RequestMethod.ALL })
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+
+    consumer
       .apply(TrpcMiddleware)
       .forRoutes({ path: 'trpc/*', method: RequestMethod.ALL });
+
+    consumer
+      .apply(StaticMiddleware)
+      .exclude({ path: 'api/*', method: RequestMethod.ALL })
+      .forRoutes({ path: '*', method: RequestMethod.GET });
   }
 }

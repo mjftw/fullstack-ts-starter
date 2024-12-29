@@ -1,12 +1,11 @@
 import { z } from 'zod';
 
-export interface EnvironmentVariables {
-  DATABASE_URL: string;
-}
-
 export const validationSchemaForEnv = z.object({
   DATABASE_URL: z.string().min(1),
+  STATIC_FILES_PATH: z.string().min(1),
 });
+
+export type EnvironmentVariables = z.infer<typeof validationSchemaForEnv>;
 
 export function validateEnv(config: Record<string, unknown>) {
   const result = validationSchemaForEnv.safeParse(config);

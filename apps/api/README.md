@@ -295,3 +295,64 @@ This isolation strategy ensures reliable and maintainable tests while maintainin
 The [NestJS Devtools](https://docs.nestjs.com/devtools/overview) are available to introspect the running app.
 The Devtools are exposed on port 5003 when the app is running locally, and you can connect by going to https://devtools.nestjs.com/.
 This does however require a paid subscription to access.
+
+## Serving the React App
+
+The NestJS backend is configured to serve the React frontend as static files in production. This setup allows for a single deployment while maintaining separate development environments.
+
+### Build Process
+
+1. Build the React app:
+
+```bash
+# Build both apps using Turborepo
+yarn build
+```
+
+This creates:
+
+- An optimized production React app build in `apps/web/dist` using Vite.
+- An optimized production React app build in `apps/api/dist` using NestJS Builder (webpack).
+
+1. The NestJS app is configured to serve these static files automatically from the `apps/web/dist` directory.
+
+### How it Works
+
+- NestJS uses a static file middleware configured in `src/middlewares/static.middleware.ts`
+- All requests that don't match API/tRPC routes are forwarded to the React app
+- This enables client-side routing to work seamlessly
+- In development, you can still run both apps separately for a better development experience
+
+### Development vs Production
+
+In development the React app is served using Vite, making use of Hot Module Reloading (HMR).
+However in production we can have the NestJS app serve the static build artefacts created by Vite.
+
+#### Development
+
+```bash
+# Terminal 1 - Run NestJS app
+$ yarn ws api dev
+
+# Terminal 2 - Run React dev server
+$ yarn ws web dev
+```
+
+- The NestJS app will be available at http://localhost:5002
+- The React app will be available at http://localhost:5173
+
+#### Production
+
+```bash
+# Build both apps using Turborepo
+$ yarn build
+
+# Run the NestJS app, passing environment variables
+STATIC_FILES_PATH="fullstack-ts-starter/apps/web/dist" \
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres \
+node apps/api/dist/src/main.js
+```
+
+- The NestJS app will be available at http://localhost:5002
+- Any routes that do not start with `/api` or `/trpc` will attempt to render a static files,
+  causing the React app to be rendered at those routes.
