@@ -14,8 +14,10 @@ import { UsersController } from './controllers/users.controller';
 import { ServicesModule } from './services/services.module';
 import { TrpcMiddleware } from './middlewares/trpc.middleware';
 import { LoggerMiddleware } from './middlewares/logging.middleware';
-import { StaticMiddleware } from './middlewares/static.middleware';
+import { StaticMiddleware } from './reactSSR/static.middleware';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
+import { ReactSSRModule } from './reactSSR/reactSSR.module';
+import { ReactSSRController } from './reactSSR/reactSSR.controller';
 
 @Module({
   imports: [
@@ -30,8 +32,9 @@ import { DevtoolsModule } from '@nestjs/devtools-integration';
     DatabaseModule,
     RepositoriesModule,
     ServicesModule,
+    ReactSSRModule,
   ],
-  controllers: [AppController, UsersController],
+  controllers: [AppController, UsersController, ReactSSRController],
   providers: [AppService],
 })
 export class AppModule implements NestModule {
@@ -43,10 +46,5 @@ export class AppModule implements NestModule {
     consumer
       .apply(TrpcMiddleware)
       .forRoutes({ path: 'trpc/*', method: RequestMethod.ALL });
-
-    consumer
-      .apply(StaticMiddleware)
-      .exclude({ path: 'api/*', method: RequestMethod.ALL })
-      .forRoutes({ path: '*', method: RequestMethod.GET });
   }
 }
