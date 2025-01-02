@@ -39,3 +39,80 @@
 .read-the-docs {
   color: #888;
 }
+
+.description-container {
+  margin: 2rem auto;
+  padding: 1.5rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.description-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.description-content h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(45deg, #646cff, #535bf2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.description-content p {
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 1rem;
+}
+
+.tech-badges {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: rgba(100, 108, 255, 0.1);
+  color: #646cff;
+  border: 1px solid rgba(100, 108, 255, 0.2);
+}
+
+.trpc-demo {
+  margin: 2rem auto;
+  padding: 1rem;
+  max-width: 500px;
+  background: rgba(46, 46, 46, 0.4);
+  border-radius: 8px;
+}
+
+.trpc-demo h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+  color: #646cff;
+}
+
+.demo-description {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.loading {
+  color: #888;
+  font-style: italic;
+}
+
+.result {
+  color: rgba(100, 108, 255, 0.8);
+}
+
+.error {
+  color: #ff6464;
+}
