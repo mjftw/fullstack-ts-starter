@@ -7,13 +7,14 @@ import * as express from 'express';
 export class StaticMiddleware implements NestMiddleware {
   constructor(
     private readonly configService: ConfigService<{
-      STATIC_FILES_PATH: string;
+      REACT_SSR_CLIENT_STATIC_DIR: string;
     }>,
   ) {}
 
   use(req: Request, res: Response, next: NextFunction) {
-    const staticPath =
-      this.configService.getOrThrow<string>('STATIC_FILES_PATH');
+    const staticPath = this.configService.getOrThrow<string>(
+      'REACT_SSR_CLIENT_STATIC_DIR',
+    );
     express.static(staticPath)(req, res, next);
   }
 }
