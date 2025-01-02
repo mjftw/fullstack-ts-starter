@@ -34,7 +34,7 @@ export class ReactSSRService implements OnModuleInit {
   private readonly serverEntryPath: string;
 
   constructor(
-    private readonly configService: ConfigService<{
+    configService: ConfigService<{
       REACT_SSR_CLIENT_INDEX_HTML_PATH: string;
       REACT_SSR_SERVER_ENTRY_JS_PATH: string;
     }>,
