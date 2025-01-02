@@ -1,9 +1,7 @@
 import "./App.css";
-import { Suspense, lazy } from "react";
 import { Link, Route, Routes } from "react-router-dom";
-
-const Home = lazy(() => import("./pages/Home"));
-const Users = lazy(() => import("./pages/Users"));
+import Home from "./pages/Home";
+import Users from "./pages/Users";
 
 export default function App() {
   return (
@@ -15,22 +13,8 @@ export default function App() {
 
       <main>
         <Routes>
-          <Route
-            path="/"
-            element={
-              <Suspense fallback={<p>Loading home page...</p>}>
-                <Home />
-              </Suspense>
-            }
-          />
-          <Route
-            path="/users"
-            element={
-              <Suspense fallback={<p>Loading users page...</p>}>
-                <Users />
-              </Suspense>
-            }
-          />
+          <Route path="/" element={<Home />} />
+          <Route path="/users" element={<Users />} />
         </Routes>
       </main>
     </div>
