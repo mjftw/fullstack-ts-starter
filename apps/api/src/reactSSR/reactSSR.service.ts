@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import { Stream, Transform } from 'node:stream';
 import { Logger } from '@nestjs/common/services/logger.service';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 /**
  * The function signature for your SSR render method,
@@ -29,6 +30,23 @@ export type RenderFn = (
  */
 @Injectable()
 export class ReactSSRService implements OnModuleInit {
+  private readonly clientIndexPath: string;
+  private readonly serverEntryPath: string;
+
+  constructor(
+    private readonly configService: ConfigService<{
+      REACT_SSR_CLIENT_INDEX_HTML_PATH: string;
+      REACT_SSR_SERVER_ENTRY_JS_PATH: string;
+    }>,
+  ) {
+    this.clientIndexPath = configService.getOrThrow(
+      'REACT_SSR_CLIENT_INDEX_HTML_PATH',
+    );
+    this.serverEntryPath = configService.getOrThrow(
+      'REACT_SSR_SERVER_ENTRY_JS_PATH',
+    );
+  }
+
   private readonly logger = new Logger(ReactSSRService.name);
   private readonly ABORT_DELAY = 10000;
 
@@ -39,26 +57,24 @@ export class ReactSSRService implements OnModuleInit {
    * On startup, load the production index.html from `web-ssr/dist/client`.
    */
   public async onModuleInit(): Promise<void> {
-    const clientIndexPath =
-      '/home/merlin/projects/fullstack-ts-starter/apps/web-ssr/dist/client/index.html';
-    this.logger.log(`Loading production index.html from ${clientIndexPath}`);
+    this.logger.log(
+      `Loading production index.html from ${this.clientIndexPath}`,
+    );
 
     try {
-      this.templateHtml = fs.readFileSync(clientIndexPath, 'utf-8');
+      this.templateHtml = fs.readFileSync(this.clientIndexPath, 'utf-8');
     } catch (err) {
       this.logger.error(`Failed to load production index.html: ${err}`);
     }
 
-    const serverEntryPath =
-      '/home/merlin/projects/fullstack-ts-starter/apps/web-ssr/dist/server/entry-server.js';
-    this.logger.log(`Loading SSR entry from ${serverEntryPath}`);
+    this.logger.log(`Loading SSR entry from ${this.serverEntryPath}`);
 
     try {
-      const serverModule = await import(serverEntryPath);
+      const serverModule = await import(this.serverEntryPath);
       this.renderFn = serverModule.render as RenderFn;
     } catch (err) {
       this.logger.error(
-        `Failed to load SSR server entry script "${serverEntryPath}": ${err}`,
+        `Failed to load SSR server entry script "${this.serverEntryPath}": ${err}`,
       );
     }
   }
