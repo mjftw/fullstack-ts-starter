@@ -356,3 +356,102 @@ node apps/api/dist/src/main.js
 - The NestJS app will be available at http://localhost:5002
 - Any routes that do not start with `/api` or `/trpc` will attempt to render a static files,
   causing the React app to be rendered at those routes.
+
+## React App Serving Options
+
+We have three separate methods we can use the serve the React app.
+
+- Have the React built as static files and served separate to the NestJS server
+  - For example, the React app could be built statically and served from a CDN
+  - It only connects to the NestJS server at runtime to load data from via tRPC
+  - This is essentially what we have when we run `yarn workspace web-ssr dev` (`vite` dev server)
+- Have the React app built as static files and served by the NestJS server
+  - This is not server side rendering, it just saves us needing a separate server for the React files and allows us to have a full stack setup in our NestJS app docker image
+- Have the React app built as static files, but then rendered on the server rather than the client
+  - This is the full React SSR setup, as described below
+- [Dev-only] Bonus - we could also set up the NestJS app with Vite Hot-Module Reloading (HMR), but still server side rendered.
+  - We have not implemented this, but it should be doable. An example can be found [from Vite here](https://github.com/bluwy/create-vite-extra/blob/master/template-ssr-react-streaming-ts) and [official Vite SSR docs here](https://vite.dev/guide/ssr).
+
+## React Server-Side Rendering (SSR)
+
+The project supports both client-side rendering (CSR) and server-side rendering (SSR) modes for the React application. SSR provides better initial page load performance and SEO benefits.
+
+### Development Modes
+
+You can run the app in two modes:
+
+```bash
+# Run in SSR mode (both Nest and React running together)
+$ yarn start
+
+# Run in separate CSR mode (Vite dev server + Nest server)
+$ yarn dev
+```
+
+### SSR Flow
+
+The following diagram shows how SSR works in production:
+
+```mermaid
+sequenceDiagram
+    participant Browser
+    participant NestJS
+    participant React
+    participant tRPC
+
+    Browser->>NestJS: Request page /some-route
+    NestJS->>React: Initialize React app with route
+    React->>React: Render app with static data
+    React->>NestJS: Return rendered HTML
+    NestJS->>Browser: Send HTML + client bundle
+    Browser->>Browser: Load client JS bundle
+    Browser->>Browser: Hydrate React app
+    Note over Browser: App is now interactive
+
+    opt Lazy Loading & Data Fetching
+        Browser->>tRPC: Request data via tRPC
+        tRPC->>Browser: Return data
+        Browser->>Browser: Render dynamic content
+    end
+```
+
+### Key Components
+
+1. **Server Entry Point** (`apps/web-ssr/src/entry-server.tsx`):
+
+   - Handles server-side rendering
+   - Provides initial route matching
+   - Manages static data requirements
+
+2. **Client Entry Point** (`apps/web-ssr/src/entry-client.tsx`):
+
+   - Handles hydration of server-rendered content
+   - Initializes client-side routing
+   - Sets up tRPC client
+
+3. **NestJS SSR Module** (`apps/api/src/reactSSR/reactSSR.module.ts`):
+   - Integrates React SSR into NestJS
+   - Manages SSR middleware
+   - Handles static file serving
+
+### Performance Optimizations
+
+- **Lazy Loading**: Components can be code-split and loaded on demand
+- **Suspense Boundaries**: Loading states for async components
+- **Static Data**: Critical data can be included in initial HTML
+- **Progressive Enhancement**: App works without JS, enhances with JS
+
+### Development Experience
+
+In development, you can choose between:
+
+1. **Full SSR Mode** (`yarn start`):
+
+   - Closest to production behavior
+   - Slower refresh cycles
+   - Better for testing SSR-specific issues
+
+2. **Split Mode** (`yarn dev`):
+   - Faster development with Vite HMR
+   - Independent backend development
+   - Client-side only rendering
