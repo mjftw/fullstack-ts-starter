@@ -10,7 +10,7 @@ import App from "./App";
 export function render(url: string, options?: RenderToPipeableStreamOptions) {
   return renderToPipeableStream(
     <StrictMode>
-      <TRPCProvider apiURL="http://localhost:80/api/trpc">
+      <TRPCProvider apiURL="">
         <StaticRouter location={url}>
           <App />
         </StaticRouter>
