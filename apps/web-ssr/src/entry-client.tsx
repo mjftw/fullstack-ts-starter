@@ -1,11 +1,14 @@
-import './index.css'
-import { StrictMode } from 'react'
-import { hydrateRoot } from 'react-dom/client'
-import App from './App'
+import "./index.css";
+import { StrictMode } from "react";
+import { hydrateRoot } from "react-dom/client";
+import { TRPCProvider } from "./utils/trpc";
+import App from "./App";
 
 hydrateRoot(
-  document.getElementById('root') as HTMLElement,
+  document.getElementById("root") as HTMLElement,
   <StrictMode>
-    <App />
-  </StrictMode>,
-)
+    <TRPCProvider apiURL="http://localhost:80/api/trpc">
+      <App />
+    </TRPCProvider>
+  </StrictMode>
+);

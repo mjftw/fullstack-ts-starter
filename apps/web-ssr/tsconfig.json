@@ -19,8 +19,16 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    "paths": {
+      /* Convenience path for importing api types */
+      "@api/*": ["../api/src/*"]
+    }
   },
   "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "references": [
+    { "path": "./tsconfig.node.json" },
+    /* Allow importing tRPC types from api project */
+    { "path": "../api/tsconfig.types.json" }
+  ]
 }
