@@ -80,7 +80,7 @@ export class ReactSSRService implements OnModuleInit {
   }
 
   public async renderPage(url: string, res: Response): Promise<void> {
-    console.log(`Render page: ${url}`);
+    this.logger.debug(`SSR Rendering page: ${url}`);
 
     if (!this.renderFn) {
       throw new Error('Render function not loaded');
@@ -124,8 +124,6 @@ export class ReactSSRService implements OnModuleInit {
     } catch (e) {
       this.logger.error(e);
       if (e instanceof Error) {
-        // We typically don't have a dev server to fix the stacktrace here,
-        // so we just log the error.
         res.status(500).end(e.stack);
       } else {
         res.status(500).end(String(e));
