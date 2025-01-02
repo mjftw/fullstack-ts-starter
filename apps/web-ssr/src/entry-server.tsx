@@ -3,14 +3,17 @@ import {
   type RenderToPipeableStreamOptions,
   renderToPipeableStream,
 } from "react-dom/server";
-import App from "./App";
+import { StaticRouter } from "react-router-dom";
 import { TRPCProvider } from "./utils/trpc";
+import App from "./App";
 
-export function render(_url: string, options?: RenderToPipeableStreamOptions) {
+export function render(url: string, options?: RenderToPipeableStreamOptions) {
   return renderToPipeableStream(
     <StrictMode>
-      <TRPCProvider apiURL="http://localhost:3000/api/trpc">
-        <App />
+      <TRPCProvider apiURL="http://localhost:80/api/trpc">
+        <StaticRouter location={url}>
+          <App />
+        </StaticRouter>
       </TRPCProvider>
     </StrictMode>,
     options
