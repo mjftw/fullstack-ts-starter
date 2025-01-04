@@ -23,6 +23,8 @@ export type RenderFn = (
   abort: () => void;
 };
 
+export type ReactClientPublicData = Record<string, unknown>;
+
 /**
  * Production SSR Service:
  * 1) Reads the pre-built index.html from `web-ssr/dist/client/`.
@@ -38,6 +40,7 @@ export class ReactSSRService implements OnModuleInit {
       REACT_SSR_CLIENT_INDEX_HTML_PATH: string;
       REACT_SSR_SERVER_ENTRY_JS_PATH: string;
     }>,
+    private readonly reactClientPublicData: Record<string, unknown>,
   ) {
     this.clientIndexPath = configService.getOrThrow(
       'REACT_SSR_CLIENT_INDEX_HTML_PATH',
@@ -50,7 +53,10 @@ export class ReactSSRService implements OnModuleInit {
   private readonly logger = new Logger(ReactSSRService.name);
   private readonly ABORT_DELAY = 10000;
 
-  private templateHtml = '';
+  private htmlParts: {
+    beforeAppHTML: string;
+    afterAppHTML: string;
+  } | null = null;
   private renderFn: RenderFn | null = null;
 
   /**
@@ -61,30 +67,74 @@ export class ReactSSRService implements OnModuleInit {
       `Loading production index.html from ${this.clientIndexPath}`,
     );
 
-    try {
-      this.templateHtml = fs.readFileSync(this.clientIndexPath, 'utf-8');
-    } catch (err) {
-      this.logger.error(`Failed to load production index.html: ${err}`);
-    }
+    this.renderFn = await this.loadRenderFn(this.serverEntryPath);
+    const indexFileContents = await this.loadIndexFile(this.clientIndexPath);
+    this.htmlParts = this.parseHtmlParts(indexFileContents);
+  }
 
-    this.logger.log(`Loading SSR entry from ${this.serverEntryPath}`);
+  private async loadRenderFn(importPath: string): Promise<RenderFn> {
+    this.logger.log(`Loading SSR entry from ${importPath}`);
 
-    try {
-      const serverModule = await import(this.serverEntryPath);
-      this.renderFn = serverModule.render as RenderFn;
-    } catch (err) {
+    const serverModule = await import(importPath).catch((err) => {
       this.logger.error(
-        `Failed to load SSR server entry script "${this.serverEntryPath}": ${err}`,
+        `Failed to load SSR server entry script "${importPath}": ${err}`,
+      );
+      throw err;
+    });
+
+    if (!serverModule.render) {
+      throw new Error(
+        `SSR server entry script "${importPath}" does not export a render function`,
       );
     }
+
+    return serverModule.render as RenderFn;
+  }
+
+  private async loadIndexFile(path: string): Promise<string> {
+    try {
+      return fs.readFileSync(path, 'utf-8');
+    } catch (err) {
+      this.logger.error(
+        `Failed to load production index.html from ${path}: ${err}`,
+      );
+      throw err;
+    }
+  }
+
+  private parseHtmlParts(indexFileContents: string) {
+    const [beforeAppHtml, afterAppHtml] =
+      indexFileContents.split('<!--app-html-->');
+    const [beforeHeaderHTML, afterHeaderHTML] =
+      beforeAppHtml.split('<!--app-head-->');
+
+    const publicSsrDataScript = `<script>
+      window.__PUBLIC_SSR_DATA__ = ${JSON.stringify(this.reactClientPublicData)}
+    </script>`;
+
+    return {
+      beforeAppHTML: [
+        beforeHeaderHTML,
+        publicSsrDataScript,
+        afterHeaderHTML,
+      ].join(''),
+      afterAppHTML: afterAppHtml,
+    };
   }
 
   public async renderPage(url: string, res: Response): Promise<void> {
     this.logger.debug(`SSR Rendering page: ${url}`);
 
+    if (!this.htmlParts) {
+      throw new Error(`HTML not loaded from ${this.clientIndexPath}`);
+    }
+
+    const htmlParts = this.htmlParts;
+
     if (!this.renderFn) {
       throw new Error('Render function not loaded');
     }
+
     try {
       let didError = false;
       const { pipe, abort } = this.renderFn(url, {
@@ -104,12 +154,10 @@ export class ReactSSRService implements OnModuleInit {
             },
           });
 
-          const [htmlStart, htmlEnd] =
-            this.templateHtml.split('<!--app-html-->');
-          res.write(htmlStart);
+          res.write(htmlParts.beforeAppHTML);
 
           transformStream.on('finish', () => {
-            res.end(htmlEnd);
+            res.end(htmlParts.afterAppHTML);
           });
 
           pipe(transformStream);

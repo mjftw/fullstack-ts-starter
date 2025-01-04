@@ -455,3 +455,56 @@ In development, you can choose between:
    - Faster development with Vite HMR
    - Independent backend development
    - Client-side only rendering
+
+## Passing Environment Variables to React SSR Browser Client
+
+In a server-side rendered (SSR) React application, you might need to expose certain environment variables to the client-side. This can be achieved with the `ReactSSRModule` in your NestJS application. The module allows you to specify which environment variables should be accessible in the browser.
+
+### Steps to Expose Environment Variables
+
+1. **Define Environment Variables:**
+
+   Ensure that the environment variables you want to expose are defined in your configuration schema. For example, in `environment-variables.ts`:
+
+   ```typescript
+   import { z } from 'zod';
+
+   export const validationSchemaForEnv = z.object({
+     // We will not expose this environment variable in the browser as it contains sensitive data
+     DATABASE_URL: z.string().min(1),
+     // We will expose these two
+     FOO: z.string().min(1),
+     BAR: z.coerce.number(),
+   });
+   ```
+
+2. **Register the ReactSSRModule:**
+
+   When registering the `ReactSSRModule`, specify the keys of the environment variables you want to expose using the `browserPublicDataConfigKeys` option. This will make the specified variables available to the client-side.
+
+   ```typescript
+   import { Module } from '@nestjs/common';
+   import { ReactSSRModule } from './reactSSR/reactSSR.module';
+
+   @Module({
+     imports: [
+       ReactSSRModule.register({
+         browserPublicDataConfigKeys: ['FOO', 'BAR'],
+       }),
+     ],
+   })
+   export class AppModule {}
+   ```
+
+3. **Accessing the Variables in the Client:**
+
+   The exposed environment variables will be available in the global `window.__PUBLIC_SSR_DATA__` object on the client-side. You can access them as follows:
+
+   ```javascript
+   const foo = window.__PUBLIC_SSR_DATA__.FOO;
+   const bar = window.__PUBLIC_SSR_DATA__.BAR;
+   ```
+
+By following these steps, you can pass environment variables from your server to the client-side of your React SSR application.
+Care must be taken not to expose any data that contains secret information - any config exposed through
+`browserPublicDataConfigKeys` will be public and readable in the browser.
