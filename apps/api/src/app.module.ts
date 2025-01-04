@@ -7,7 +7,10 @@ import {
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './controllers/app.controller';
 import { AppService } from './app.service';
-import { validateEnv } from './config/environment-variables';
+import {
+  EnvironmentVariables,
+  validateEnv,
+} from './config/environment-variables';
 import { DatabaseModule } from './database/database.module';
 import { RepositoriesModule } from './repository/repositories.module';
 import { UsersController } from './controllers/users.controller';
@@ -31,7 +34,11 @@ import { ReactSSRController } from './reactSSR/reactSSR.controller';
     DatabaseModule,
     RepositoriesModule,
     ServicesModule,
-    ReactSSRModule,
+    // Passing in the EnvironmentVariables type to the ReactSSRModule.register function
+    // so that we can type check the config service keys.
+    ReactSSRModule.register<EnvironmentVariables>({
+      browserPublicDataConfigKeys: ['FOO', 'BAR'],
+    }),
   ],
   controllers: [AppController, UsersController, ReactSSRController],
   providers: [AppService],

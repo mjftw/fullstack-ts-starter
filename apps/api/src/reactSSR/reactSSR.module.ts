@@ -3,14 +3,14 @@ import {
   Module,
   NestModule,
   RequestMethod,
+  DynamicModule,
 } from '@nestjs/common';
 import { ReactSSRController } from './reactSSR.controller';
-import { ReactSSRService } from './reactSSR.service';
+import { ReactSSRService, ReactClientPublicData } from './reactSSR.service';
 import { StaticMiddleware } from './static.middleware';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
-  providers: [ReactSSRService],
-  exports: [ReactSSRService],
   controllers: [ReactSSRController],
 })
 export class ReactSSRModule implements NestModule {
@@ -25,5 +25,47 @@ export class ReactSSRModule implements NestModule {
     consumer
       .apply(StaticMiddleware)
       .forRoutes({ path: '*', method: RequestMethod.GET });
+  }
+
+  static register<
+    E extends Record<string, unknown> = Record<string, unknown>,
+  >(options: {
+    /**
+     * Keys of the config service that should be exposed to the client
+     * as public data accessible in the browser.
+     * If the ConfigService is missing any of the keys specified, and error will be thrown.
+     */
+    browserPublicDataConfigKeys: (keyof E & string)[];
+  }): DynamicModule {
+    return {
+      module: ReactSSRModule,
+      providers: [
+        {
+          provide: ReactSSRService,
+          useFactory: (configService: ConfigService<E>) => {
+            const clientPublicConfig =
+              options.browserPublicDataConfigKeys.reduce(
+                (acc, key) => {
+                  acc[key] = configService.get(key, null);
+                  return acc;
+                },
+                {} as Record<string, unknown>,
+              );
+
+            const missingKeys = options.browserPublicDataConfigKeys.filter(
+              (key) => clientPublicConfig[key] === null,
+            );
+            if (missingKeys.length > 0) {
+              throw new Error(
+                `Cannot register ReactSSRModule: ConfigService is missing required keys: ${missingKeys.map((key) => `'${key}'`).join(', ')}`,
+              );
+            }
+            return new ReactSSRService(configService, clientPublicConfig);
+          },
+          inject: [ConfigService],
+        },
+      ],
+      exports: [ReactSSRService],
+    };
   }
 }
