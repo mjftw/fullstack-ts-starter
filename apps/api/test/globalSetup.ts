@@ -2,6 +2,7 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import path from 'path';
 import postgres from 'postgres';
+import { hashElement } from 'folder-hash';
 import { swapDatabaseInURL } from 'src/database/utils';
 
 const TEMPLATE_DB_NAME = 'template_database' as const;
@@ -12,9 +13,47 @@ export default async function setup() {
     throw new Error('DATABASE_URL is not set');
   }
 
-  console.log('Creating template database for testing...');
+  const migrationsDir = path.join(__dirname, '..', 'drizzle');
 
-  await createTemplateDatabase(process.env.DATABASE_URL);
+  await createTemplateDatabase(process.env.DATABASE_URL, migrationsDir);
+}
+
+async function hashMigrations(migrationsDir: string): Promise<string> {
+  const hashResult = await hashElement(migrationsDir, {
+    encoding: 'hex',
+  });
+  return hashResult.hash;
+}
+
+async function saveMigrationsHash(sql: postgres.Sql, migrationsHash: string) {
+  await sql`CREATE SCHEMA IF NOT EXISTS template_database_meta`;
+  await sql`CREATE TABLE IF NOT EXISTS template_database_meta.migrations_hash (
+    id SERIAL PRIMARY KEY,
+    hash TEXT NOT NULL
+  )`;
+  await sql`INSERT INTO template_database_meta.migrations_hash (hash) VALUES (${migrationsHash})`;
+}
+
+async function readMigrationsHash(sql: postgres.Sql): Promise<string | null> {
+  const metaCheckResult = await sql`
+    SELECT EXISTS (
+      SELECT 1 FROM information_schema.tables
+      WHERE table_schema = 'template_database_meta'
+      AND table_name = 'migrations_hash'
+    ) AS table_exists,
+    EXISTS (
+      SELECT 1 FROM information_schema.schemata
+      WHERE schema_name = 'template_database_meta'
+    ) AS schema_exists
+  `;
+
+  if (!metaCheckResult[0]?.table_exists || !metaCheckResult[0]?.schema_exists) {
+    return null;
+  }
+
+  const result =
+    await sql`SELECT hash FROM template_database_meta.migrations_hash ORDER BY id DESC LIMIT 1`;
+  return result[0]?.hash ?? null;
 }
 
 /**
@@ -22,15 +61,36 @@ export default async function setup() {
  * Once set up, we can use the template database to create a new database for each test.
  * @param databaseUrl - The database URL to use.
  */
-async function createTemplateDatabase(databaseUrl: string) {
-  const adminSql = postgres(databaseUrl);
+async function createTemplateDatabase(
+  databaseUrl: string,
+  migrationsDir: string,
+) {
+  const adminSql = postgres(databaseUrl, {
+    onnotice: () => {},
+    debug: false,
+  });
+
+  const migrationsHash = await hashMigrations(migrationsDir);
+
+  const existingHash = await readMigrationsHash(adminSql);
+  if (existingHash && existingHash === migrationsHash) {
+    console.log('Template database matches migrations, skipping setup...');
+    return;
+  }
+  console.log('Creating template database for testing...');
 
   // Reset and create template database
   await resetTemplateDatabase(adminSql);
-  await adminSql.end();
 
   // Setup and migrate template database
-  const templateConfig = await setupTemplateDatabase(databaseUrl);
+  const templateConfig = await setupTemplateDatabase(
+    databaseUrl,
+    migrationsDir,
+  );
+
+  await saveMigrationsHash(adminSql, migrationsHash);
+
+  await adminSql.end();
   await templateConfig.sql.end();
 }
 /**
@@ -49,14 +109,14 @@ async function resetTemplateDatabase(sql: postgres.Sql) {
  * @param dbUrl - The database URL to use.
  * @returns The database configuration.
  */
-async function setupTemplateDatabase(dbUrl: string) {
+async function setupTemplateDatabase(dbUrl: string, migrationsDir: string) {
   const templateUrl = swapDatabaseInURL(dbUrl, TEMPLATE_DB_NAME);
   const sql = postgres(templateUrl);
   const db = drizzle(sql);
 
   // Apply migrations
   await migrate(db, {
-    migrationsFolder: path.join(__dirname, '..', 'drizzle'),
+    migrationsFolder: migrationsDir,
   });
 
   // Mark the database as a template
