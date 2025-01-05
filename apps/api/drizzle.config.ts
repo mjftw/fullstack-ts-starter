@@ -1,14 +1,14 @@
 import type { Config } from 'drizzle-kit';
-import { validateEnv } from './src/config/environment-variables';
 
-// Validate environment variables
-const validatedEnv = validateEnv(process.env);
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL is not set');
+}
 
 export default {
   schema: './src/persistence/drizzle/schema/index.ts',
   out: './drizzle',
   dialect: 'postgresql',
   dbCredentials: {
-    url: validatedEnv.DATABASE_URL,
+    url: process.env.DATABASE_URL,
   },
 } satisfies Config;

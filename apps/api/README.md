@@ -223,13 +223,16 @@ The project implements a robust database isolation strategy for testing using a 
 
 1. **Template Database Setup**
 
-   - Before tests run, a fresh template database is created
-   - All migrations are applied to this template database
-   - The template is marked as a template in PostgreSQL
+   - Before tests run, a template database is created
+   - All migrations are applied to this new template database
+   - The template is marked as a template in PostgreSQL, allowing new databases to be created from it
+   - If a template database already exists was created from the same database migrations, this is resued rather than recreating it, for better performance
+     - This works by calculating the SHA1 hash of the migrations directory and storing it in Postgres after creating the template database
+     - If the hash of the migrations directory matches the hash stored in Postgres, we do not need to recreate the template database and can reuse the existing template
 
-See [testSetup.ts](test/testSetup.ts).
+See [globalSetup.ts](test/globalSetup.ts).
 
-2. **Per-Test Isolation**
+1. **Per-Test Isolation**
 
    - Each test gets its own database cloned from the template
    - The database is created with a unique name using UUID
