@@ -180,3 +180,31 @@ main {
   flex: 1;
   padding: 0 2rem;
 }
+
+.server-data {
+  margin: 2rem auto;
+  padding: 1.5rem;
+  max-width: 500px;
+  background: rgba(46, 46, 46, 0.4);
+  border-radius: 8px;
+  text-align: left;
+}
+
+.server-data h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+  color: #646cff;
+}
+
+.server-data pre {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.data-description {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+}

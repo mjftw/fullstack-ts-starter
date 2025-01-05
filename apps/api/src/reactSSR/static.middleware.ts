@@ -15,6 +15,12 @@ export class StaticMiddleware implements NestMiddleware {
     const staticPath = this.configService.getOrThrow<string>(
       'REACT_SSR_CLIENT_STATIC_DIR',
     );
-    express.static(staticPath)(req, res, next);
+
+    const isFileRequest = /\.(\w+)$/.test(req.path);
+    if (isFileRequest) {
+      express.static(staticPath)(req, res, next);
+    } else {
+      next();
+    }
   }
 }

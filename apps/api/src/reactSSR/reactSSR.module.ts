@@ -42,7 +42,14 @@ export class ReactSSRModule implements NestModule {
       providers: [
         {
           provide: ReactSSRService,
-          useFactory: (configService: ConfigService<E>) => {
+          useFactory: (
+            configService: ConfigService<
+              E & {
+                REACT_SSR_CLIENT_INDEX_HTML_PATH: string;
+                REACT_SSR_SERVER_ENTRY_JS_PATH: string;
+              }
+            >,
+          ) => {
             const clientPublicConfig =
               options.browserPublicDataConfigKeys.reduce(
                 (acc, key) => {

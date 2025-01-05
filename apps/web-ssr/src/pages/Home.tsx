@@ -1,11 +1,13 @@
 import { Suspense, lazy } from "react";
 import reactLogo from "../assets/react.svg";
 import { trpc } from "../utils/trpc";
+import { useServerPublicData } from "../utils/PublicDataContext";
 
 const Card = lazy(() => import("../Card"));
 
 export default function Home() {
   const helloQuery = trpc.hello.hello.useQuery({ name: "from SSR" });
+  const serverData = useServerPublicData();
 
   return (
     <div>
@@ -26,6 +28,14 @@ export default function Home() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
+
+      <div className="server-data">
+        <h3>Server-Provided Configuration</h3>
+        <p className="data-description">
+          This configuration was injected during server-side rendering:
+        </p>
+        <pre>{JSON.stringify(serverData, null, 2)}</pre>
+      </div>
 
       <div className="trpc-demo">
         <h3>tRPC Demo</h3>
