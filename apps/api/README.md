@@ -404,7 +404,7 @@ sequenceDiagram
 
     Browser->>NestJS: Request page /some-route
     NestJS->>React: Initialize React app at route /some-route
-    React->>React: Render app with static data
+    React->>React: Render app with static data & public env vars
     React->>NestJS: Return rendered HTML
     NestJS->>Browser: Stream HTML + client bundle
     Browser->>Browser: Load client JS bundle
