@@ -400,7 +400,6 @@ sequenceDiagram
     participant Browser
     participant NestJS
     participant React
-    participant tRPC
 
     Browser->>NestJS: Request page /some-route
     NestJS->>React: Initialize React app at route /some-route
@@ -412,8 +411,8 @@ sequenceDiagram
     Note over Browser: App is now interactive
 
     opt Lazy Loading & Data Fetching
-        Browser->>tRPC: Request data via tRPC
-        tRPC->>Browser: Return data
+        Browser->>NestJS: Request data via tRPC
+        NestJS->>Browser: Return data
         Browser->>Browser: Render dynamic content
     end
 
