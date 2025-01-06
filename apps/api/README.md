@@ -403,10 +403,10 @@ sequenceDiagram
     participant tRPC
 
     Browser->>NestJS: Request page /some-route
-    NestJS->>React: Initialize React app with route
+    NestJS->>React: Initialize React app at route /some-route
     React->>React: Render app with static data
     React->>NestJS: Return rendered HTML
-    NestJS->>Browser: Send HTML + client bundle
+    NestJS->>Browser: Stream HTML + client bundle
     Browser->>Browser: Load client JS bundle
     Browser->>Browser: Hydrate React app
     Note over Browser: App is now interactive
@@ -416,6 +416,9 @@ sequenceDiagram
         tRPC->>Browser: Return data
         Browser->>Browser: Render dynamic content
     end
+
+    Browser->>Browser: Click link to /some-other-route
+    Browser->>Browser: Client-side naviation
 ```
 
 ### Key Components
