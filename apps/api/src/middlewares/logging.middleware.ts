@@ -8,7 +8,7 @@ const colours = {
   red: '\x1b[31m',
   magenta: '\x1b[35m',
   reset: '\x1b[0m',
-};
+} as const;
 
 // Pretty print with colour
 const withColour = (text: string | number, color: string) => {
@@ -32,9 +32,9 @@ export class LoggerMiddleware implements NestMiddleware {
 
       console.log(
         `${withColour(method, methodColor)} ` +
-          `${withColour(originalUrl, urlColor)} ` +
-          `${withColour(statusCode, statusColor)} - ` +
-          `${withColour(duration + 'ms', durationColor)}`,
+        `${withColour(originalUrl, urlColor)} ` +
+        `${withColour(statusCode, statusColor)} - ` +
+        `${withColour(duration + 'ms', durationColor)}`,
       );
     });
 
