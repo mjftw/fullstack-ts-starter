@@ -6,7 +6,7 @@ import {
   DynamicModule,
 } from '@nestjs/common';
 import { ReactSSRController } from './reactSSR.controller';
-import { ReactSSRService, ReactClientPublicData } from './reactSSR.service';
+import { ReactSSRService } from './reactSSR.service';
 import { StaticMiddleware } from './static.middleware';
 import { ConfigService } from '@nestjs/config';
 
@@ -24,7 +24,7 @@ export class ReactSSRModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(StaticMiddleware)
-      .forRoutes({ path: '*', method: RequestMethod.GET });
+      .forRoutes({ path: '*.*', method: RequestMethod.GET });
   }
 
   static register<
@@ -42,7 +42,14 @@ export class ReactSSRModule implements NestModule {
       providers: [
         {
           provide: ReactSSRService,
-          useFactory: (configService: ConfigService<E>) => {
+          useFactory: (
+            configService: ConfigService<
+              E & {
+                REACT_SSR_CLIENT_INDEX_HTML_PATH: string;
+                REACT_SSR_SERVER_ENTRY_JS_PATH: string;
+              }
+            >,
+          ) => {
             const clientPublicConfig =
               options.browserPublicDataConfigKeys.reduce(
                 (acc, key) => {

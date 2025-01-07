@@ -13,6 +13,7 @@ import { ConfigService } from '@nestjs/config';
  */
 export type RenderFn = (
   url: string,
+  config: Record<string, unknown>,
   opts: {
     onShellError: () => void;
     onShellReady: () => void;
@@ -137,7 +138,7 @@ export class ReactSSRService implements OnModuleInit {
 
     try {
       let didError = false;
-      const { pipe, abort } = this.renderFn(url, {
+      const { pipe, abort } = this.renderFn(url, this.reactClientPublicData, {
         onShellError: () => {
           res.status(500);
           res.set({ 'Content-Type': 'text/html' });
