@@ -513,3 +513,44 @@ In a server-side rendered (SSR) React application, you might need to expose cert
 By following these steps, you can pass environment variables from your server to the client-side of your React SSR application.
 Care must be taken not to expose any data that contains secret information - any config exposed through
 `browserPublicDataConfigKeys` will be public and readable in the browser.
+
+## Environment Variables and Server-to-Client Config
+
+The app supports passing select environment variables/config from the server to the client during the initial SSR render. This is useful for configs that need to be available immediately on page load.
+
+### How It Works
+
+1. **Server Setup**
+```typescript
+// app.module.ts
+ReactSSRModule.register<EnvironmentVariables>({
+  // The keys of config values from ConfigService that should be exposed to the client
+  browserPublicDataConfigKeys: ['FOO', 'BAR'] 
+});
+```
+
+2. **Initial Render**
+- During SSR, selected config is injected into the HTML as a script tag:
+```html
+<script>
+  window.__PUBLIC_SSR_DATA__ = {"FOO": "value", "BAR": 123}
+</script>
+```
+
+3. **Client Access** 
+```typescript
+// Access in your React components
+const publicData = window.__PUBLIC_SSR_DATA__;
+const foo = publicData.FOO;
+const bar = publicData.BAR;
+```
+
+A client-side hook is provided to make accessing the config values easier.
+See [apps/web-ssr/src/utils/ConfigContext.tsx](../../apps/web-ssr/src/utils/ConfigContext.tsx)
+
+
+### Security Considerations
+
+- Only expose non-sensitive config via `browserPublicDataConfigKeys`
+- Any values specified will be publicly visible in the HTML source
+- Keep sensitive values (API keys, secrets) server-side only
