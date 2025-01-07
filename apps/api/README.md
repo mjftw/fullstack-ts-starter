@@ -359,3 +359,198 @@ node apps/api/dist/src/main.js
 - The NestJS app will be available at http://localhost:5002
 - Any routes that do not start with `/api` or `/trpc` will attempt to render a static files,
   causing the React app to be rendered at those routes.
+
+## React App Serving Options
+
+We have three separate methods we can use the serve the React app.
+
+- Have the React built as static files and served separate to the NestJS server
+  - For example, the React app could be built statically and served from a CDN
+  - It only connects to the NestJS server at runtime to load data from via tRPC
+  - This is essentially what we have when we run `yarn workspace web-ssr dev` (`vite` dev server)
+- Have the React app built as static files and served by the NestJS server
+  - This is not server side rendering, it just saves us needing a separate server for the React files and allows us to have a full stack setup in our NestJS app docker image
+- Have the React app built as static files, but then rendered on the server rather than the client
+  - This is the full React SSR setup, as described below
+- [Dev-only] Bonus - we could also set up the NestJS app with Vite Hot-Module Reloading (HMR), but still server side rendered.
+  - We have not implemented this, but it should be doable. An example can be found [from Vite here](https://github.com/bluwy/create-vite-extra/blob/master/template-ssr-react-streaming-ts) and [official Vite SSR docs here](https://vite.dev/guide/ssr).
+
+## React Server-Side Rendering (SSR)
+
+The project supports both client-side rendering (CSR) and server-side rendering (SSR) modes for the React application. SSR provides better initial page load performance and SEO benefits.
+
+### Development Modes
+
+You can run the app in two modes:
+
+```bash
+# Run in SSR mode (both Nest and React running together)
+$ yarn start
+
+# Run in separate CSR mode (Vite dev server + Nest server)
+$ yarn dev
+```
+
+### SSR Flow
+
+The following diagram shows how SSR works in production:
+
+```mermaid
+sequenceDiagram
+    participant Browser
+    participant NestJS
+    participant React
+
+    Browser->>NestJS: Request page /some-route
+    NestJS->>React: Initialize React app at route /some-route
+    React->>React: Render app with static data & public env vars
+    React->>NestJS: Return rendered HTML
+    NestJS->>Browser: Stream HTML + client bundle
+    Browser->>Browser: Load client JS bundle
+    Browser->>Browser: Hydrate React app
+    Note over Browser: App is now interactive
+
+    opt Lazy Loading & Data Fetching
+        Browser->>NestJS: Request data via tRPC
+        NestJS->>Browser: Return data
+        Browser->>Browser: Render dynamic content
+    end
+
+    Browser->>Browser: Click link to /some-other-route
+    Browser->>Browser: Client-side naviation
+```
+
+### Key Components
+
+1. **Server Entry Point** (`apps/web-ssr/src/entry-server.tsx`):
+
+   - Handles server-side rendering
+   - Provides initial route matching
+   - Manages static data requirements
+
+2. **Client Entry Point** (`apps/web-ssr/src/entry-client.tsx`):
+
+   - Handles hydration of server-rendered content
+   - Initializes client-side routing
+   - Sets up tRPC client
+
+3. **NestJS SSR Module** (`apps/api/src/reactSSR/reactSSR.module.ts`):
+   - Integrates React SSR into NestJS
+   - Manages SSR middleware
+   - Handles static file serving
+
+### Performance Optimizations
+
+- **Lazy Loading**: Components can be code-split and loaded on demand
+- **Suspense Boundaries**: Loading states for async components
+- **Static Data**: Critical data can be included in initial HTML
+- **Progressive Enhancement**: App works without JS, enhances with JS
+
+### Development Experience
+
+In development, you can choose between:
+
+1. **Full SSR Mode** (`yarn start`):
+
+   - Closest to production behavior
+   - Slower refresh cycles
+   - Better for testing SSR-specific issues
+
+2. **Split Mode** (`yarn dev`):
+   - Faster development with Vite HMR
+   - Independent backend development
+   - Client-side only rendering
+
+## Passing Environment Variables to React SSR Browser Client
+
+In a server-side rendered (SSR) React application, you might need to expose certain environment variables to the client-side. This can be achieved with the `ReactSSRModule` in your NestJS application. The module allows you to specify which environment variables should be accessible in the browser.
+
+### Steps to Expose Environment Variables
+
+1. **Define Environment Variables:**
+
+   Ensure that the environment variables you want to expose are defined in your configuration schema. For example, in `environment-variables.ts`:
+
+   ```typescript
+   import { z } from 'zod';
+
+   export const validationSchemaForEnv = z.object({
+     // We will not expose this environment variable in the browser as it contains sensitive data
+     DATABASE_URL: z.string().min(1),
+     // We will expose these two
+     FOO: z.string().min(1),
+     BAR: z.coerce.number(),
+   });
+   ```
+
+2. **Register the ReactSSRModule:**
+
+   When registering the `ReactSSRModule`, specify the keys of the environment variables you want to expose using the `browserPublicDataConfigKeys` option. This will make the specified variables available to the client-side.
+
+   ```typescript
+   import { Module } from '@nestjs/common';
+   import { ReactSSRModule } from './reactSSR/reactSSR.module';
+
+   @Module({
+     imports: [
+       ReactSSRModule.register({
+         browserPublicDataConfigKeys: ['FOO', 'BAR'],
+       }),
+     ],
+   })
+   export class AppModule {}
+   ```
+
+3. **Accessing the Variables in the Client:**
+
+   The exposed environment variables will be available in the global `window.__PUBLIC_SSR_DATA__` object on the client-side. You can access them as follows:
+
+   ```javascript
+   const foo = window.__PUBLIC_SSR_DATA__.FOO;
+   const bar = window.__PUBLIC_SSR_DATA__.BAR;
+   ```
+
+By following these steps, you can pass environment variables from your server to the client-side of your React SSR application.
+Care must be taken not to expose any data that contains secret information - any config exposed through
+`browserPublicDataConfigKeys` will be public and readable in the browser.
+
+## Environment Variables and Server-to-Client Config
+
+The app supports passing select environment variables/config from the server to the client during the initial SSR render. This is useful for configs that need to be available immediately on page load.
+
+### How It Works
+
+1. **Server Setup**
+```typescript
+// app.module.ts
+ReactSSRModule.register<EnvironmentVariables>({
+  // The keys of config values from ConfigService that should be exposed to the client
+  browserPublicDataConfigKeys: ['FOO', 'BAR'] 
+});
+```
+
+2. **Initial Render**
+- During SSR, selected config is injected into the HTML as a script tag:
+```html
+<script>
+  window.__PUBLIC_SSR_DATA__ = {"FOO": "value", "BAR": 123}
+</script>
+```
+
+3. **Client Access** 
+```typescript
+// Access in your React components
+const publicData = window.__PUBLIC_SSR_DATA__;
+const foo = publicData.FOO;
+const bar = publicData.BAR;
+```
+
+A client-side hook is provided to make accessing the config values easier.
+See [apps/web-ssr/src/utils/ConfigContext.tsx](../../apps/web-ssr/src/utils/ConfigContext.tsx)
+
+
+### Security Considerations
+
+- Only expose non-sensitive config via `browserPublicDataConfigKeys`
+- Any values specified will be publicly visible in the HTML source
+- Keep sensitive values (API keys, secrets) server-side only

@@ -2,16 +2,15 @@
 
 This is fullstack turborepo starter. It comes with the following features.
 
-- ✅ Turborepo
-- ✅ Nestjs
+- ✅ Turborepo (monorepo tooling)
+- ✅ Nestjs (backend framework)
   - ✅ Env Config with Validation
-  - ✅ Drizzle
-- ✅ React + Vite
-- ✅ tRPC
+  - ✅ Drizzle (ORM)
+- ✅ React + Vite (frontend framework)
+  - ✅ Server-side rendering (SSR)
+- ✅ tRPC (client-server communication)
 - ✅ Testing using Vitest
   - ✅ Concurrent isolated database testing 
-- ✅ Reverse Proxy using Nginx
-- ✅ Docker Integration
 - ✅ Postgres Database
 
 
@@ -23,9 +22,9 @@ This turborepo uses [Yarn](https://classic.yarnpkg.com/lang/en/) as a package ma
 
 - `api`: a [NestJS](https://nestjs.com/) app
 - `web`: a [React](https://reactjs.org) + [Vite](https://vitejs.dev) app
-- `tsconfig`: `tsconfig.json`s used throughout the monorepo
+- `web-ssr`: a [React](https://reactjs.org) + [Vite](https://vitejs.dev) app with server-side rendering (SSR)
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+Check out the [API Project Docs](apps/api/README.md) for more detailed information.
 
 ### Utilities
 

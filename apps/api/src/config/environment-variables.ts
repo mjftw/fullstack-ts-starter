@@ -2,7 +2,11 @@ import { z } from 'zod';
 
 export const validationSchemaForEnv = z.object({
   DATABASE_URL: z.string().min(1),
-  STATIC_FILES_PATH: z.string().min(1),
+  REACT_SSR_CLIENT_INDEX_HTML_PATH: z.string().min(1),
+  REACT_SSR_SERVER_ENTRY_JS_PATH: z.string().min(1),
+  REACT_SSR_CLIENT_STATIC_DIR: z.string().min(1),
+  FOO: z.string().min(1),
+  BAR: z.coerce.number(),
 });
 
 export type EnvironmentVariables = z.infer<typeof validationSchemaForEnv>;

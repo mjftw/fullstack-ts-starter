@@ -1,0 +1,210 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.description-container {
+  margin: 2rem auto;
+  padding: 1.5rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.description-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.description-content h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(45deg, #646cff, #535bf2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.description-content p {
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 1rem;
+}
+
+.tech-badges {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: rgba(100, 108, 255, 0.1);
+  color: #646cff;
+  border: 1px solid rgba(100, 108, 255, 0.2);
+}
+
+.trpc-demo {
+  margin: 2rem auto;
+  padding: 1rem;
+  max-width: 500px;
+  background: rgba(46, 46, 46, 0.4);
+  border-radius: 8px;
+}
+
+.trpc-demo h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+  color: #646cff;
+}
+
+.demo-description {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.loading {
+  color: #888;
+  font-style: italic;
+}
+
+.result {
+  color: rgba(100, 108, 255, 0.8);
+}
+
+.error {
+  color: #ff6464;
+}
+
+nav {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1rem;
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+nav a {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  color: #646cff;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: border-color 0.25s;
+}
+
+nav a:hover {
+  border-color: #646cff;
+}
+
+.users-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.add-user-form form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.user-table th,
+.user-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-table th {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+  padding: 0 2rem;
+}
+
+.server-data {
+  margin: 2rem auto;
+  padding: 1.5rem;
+  max-width: 500px;
+  background: rgba(46, 46, 46, 0.4);
+  border-radius: 8px;
+  text-align: left;
+}
+
+.server-data h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+  color: #646cff;
+}
+
+.server-data pre {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.data-description {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+}
