@@ -52,7 +52,6 @@ const AddUserForm = () => {
         email: formData.get("email") as string,
         name: formData.get("name") as string,
       });
-      e.currentTarget.reset();
     } catch (error) {
       alert(`Error adding user: ${error}`);
     }
