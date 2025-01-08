@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body } from '@nestjs/common';
 import { InsertUser, User } from '../database/drizzle/schema';
 import { UsersRepository } from '../repository/users/users.repository';
 
-@Controller('/api/users')
+@Controller('/users')
 export class UsersController {
   constructor(private readonly usersRepository: UsersRepository) { }
 
