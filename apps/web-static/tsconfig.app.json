@@ -22,9 +22,9 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
     "paths": {
-      "@api/*": ["../api/src/*"]
+      "@backend/*": ["../backend/src/*"]
     }
   },
-  "references": [{ "path": "../api/tsconfig.types.json" }],
+  "references": [{ "path": "../backend/tsconfig.types.json" }],
   "include": ["src"]
 }

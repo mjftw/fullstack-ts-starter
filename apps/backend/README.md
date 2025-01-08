@@ -315,7 +315,7 @@ yarn build
 This creates:
 
 - An optimized production React app build in `apps/web/dist` using Vite.
-- An optimized production React app build in `apps/api/dist` using NestJS Builder (webpack).
+- An optimized production NestJS app build in `apps/backend/dist` using NestJS Builder (webpack).
 
 1. The NestJS app is configured to serve these static files automatically from the `apps/web/dist` directory.
 
@@ -335,7 +335,7 @@ However in production we can have the NestJS app serve the static build artefact
 
 ```bash
 # Terminal 1 - Run NestJS app
-$ yarn ws api dev
+$ yarn ws backend dev:react-ssr
 
 # Terminal 2 - Run React dev server
 $ yarn ws web dev

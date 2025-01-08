@@ -20,11 +20,11 @@ This turborepo uses [Yarn](https://classic.yarnpkg.com/lang/en/) as a package ma
 
 ### Apps and Packages
 
-- `api`: a [NestJS](https://nestjs.com/) app
+- `backend`: a [NestJS](https://nestjs.com/) app
 - `web`: a [React](https://reactjs.org) + [Vite](https://vitejs.dev) app
 - `web-ssr`: a [React](https://reactjs.org) + [Vite](https://vitejs.dev) app with server-side rendering (SSR)
 
-Check out the [API Project Docs](apps/api/README.md) for more detailed information.
+Check out the [Backend Project Docs](apps/backend/README.md) for more detailed information.
 
 ### Utilities
 
@@ -54,8 +54,9 @@ npm i -g nps
 
 - Frontend
   - `cd apps/web && cp .env.example .env`
+  - `cd apps/web-ssr && cp .env.example .env`
 - Backend
-  - `cd apps/api && cp .env.example .env`
+  - `cd apps/backend && cp .env.example .env`
 
 ### Install Dependencies
 
