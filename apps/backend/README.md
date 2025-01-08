@@ -32,7 +32,6 @@
 $ npm install
 ```
 
-
 ## Backend Entrypoints
 
 The NestJS backend has multiple entrypoints, each serving different purposes:
