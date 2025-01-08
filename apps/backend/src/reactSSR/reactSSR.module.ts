@@ -4,22 +4,15 @@ import {
   NestModule,
   RequestMethod,
   DynamicModule,
+  Inject,
 } from '@nestjs/common';
 import { ReactSSRController } from './reactSSR.controller';
 import { ReactSSRService } from './reactSSR.service';
-import { StaticMiddleware } from './static.middleware';
+import { StaticMiddleware } from '../middlewares/static.middleware';
 import { ConfigService } from '@nestjs/config';
 
-@Module({
-  controllers: [ReactSSRController],
-})
+@Module({})
 export class ReactSSRModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(StaticMiddleware)
-      // Match only files rather than routes (assuming files have a . extension - e.g. vite.svg)
-      .forRoutes({ path: '*.*', method: RequestMethod.GET });
-  }
 
   static register<
     E extends Record<string, unknown> = Record<string, unknown>,
@@ -65,8 +58,22 @@ export class ReactSSRModule implements NestModule {
           },
           inject: [ConfigService],
         },
+        {
+          provide: 'STATIC_FILES_DIR',
+          useFactory: (configService: ConfigService) => {
+            return configService.getOrThrow<string>('REACT_SSR_CLIENT_STATIC_DIR');
+          },
+          inject: [ConfigService],
+        }
       ],
+      controllers: [ReactSSRController],
       exports: [ReactSSRService],
     };
+  }
+
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(StaticMiddleware)
+      .forRoutes({ path: '*.*', method: RequestMethod.GET });
   }
 }

@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const validationSchemaForEnv = z.object({
   DATABASE_URL: z.string().min(1),
+  REACT_STATIC_FILES_DIR: z.string().min(1),
   REACT_SSR_CLIENT_INDEX_HTML_PATH: z.string().min(1),
   REACT_SSR_SERVER_ENTRY_JS_PATH: z.string().min(1),
   REACT_SSR_CLIENT_STATIC_DIR: z.string().min(1),
