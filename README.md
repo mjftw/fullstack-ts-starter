@@ -28,39 +28,6 @@ This turborepo uses [Yarn](https://classic.yarnpkg.com/lang/en/) as a package ma
 
 Check out the [Backend Project Docs](apps/backend/README.md) for more detailed information.
 
-## Backend Entrypoints
-
-The NestJS backend has multiple entrypoints, each serving different purposes:
-
-### API Server (`entrypoints/api`)
-- REST API with Swagger documentation
-- tRPC endpoints for type-safe client communication
-- Runs on port 5002
-- Start with: `yarn dev:api` or `yarn start:api`
-
-### Static React Server (`entrypoints/reactStatic`)
-- Serves the React SPA as static files
-- Includes tRPC endpoints for data fetching
-- Basic setup for serving static content
-- Start with: `yarn dev:react-static` or `yarn start:react-static`
-
-### SSR React Server (`entrypoints/reactSSR`)
-- Full server-side rendering for React
-- Streams rendered HTML to client
-- Hydrates into interactive app
-- Includes tRPC endpoints
-- Configurable server-to-client data passing
-- Start with: `yarn dev:react-ssr` or `yarn start:react-ssr`
-
-### REPL (`entrypoints/repl`)
-- Interactive shell for debugging and development
-- Direct access to NestJS dependency injection container
-- Useful for testing services and repositories
-- Start with: `yarn dev:repl` or `yarn start:repl`
-
-Each entrypoint uses the same core NestJS modules but configures them differently based on its needs.
-
-
 ### Utilities
 
 This turborepo has some additional tools already setup for you:
@@ -99,6 +66,44 @@ You can install the monorepo dependencies with:
 ```
 yarn install
 ```
+
+
+## Backend Entrypoints
+
+The NestJS backend has multiple entrypoints, each serving different purposes:
+
+### API Server (`entrypoints/api`)
+- REST API with Swagger documentation
+- tRPC endpoints for type-safe client communication
+- Runs on port 5002
+- Start with: `yarn dev:api` or `yarn start:api`
+
+### Static React Server (`entrypoints/reactStatic`)
+- Serves the React SPA as static files
+- Includes tRPC endpoints for data fetching
+- Basic setup for serving static content
+- Start with: `yarn dev:react-static` or `yarn start:react-static`
+
+### SSR React Server (`entrypoints/reactSSR`)
+- Full server-side rendering for React
+- Streams rendered HTML to client
+- Hydrates into interactive app
+- Includes tRPC endpoints
+- Configurable server-to-client data passing
+- Start with: `yarn dev:react-ssr` or `yarn start:react-ssr`
+
+### REPL (`entrypoints/repl`)
+- Interactive shell for debugging and development
+- Direct access to NestJS dependency injection container
+- Useful for testing services and repositories
+- Start with: `yarn dev:repl` or `yarn start:repl`
+
+Each entrypoint uses the same core NestJS modules but configures them differently based on its needs.
+
+## Deployment
+
+A dockerfile is included to build the full-stack React SSR + Nest app.
+Find more info at [deploy/README.md][deploy/README.md]
 
 
 ## Attribution
