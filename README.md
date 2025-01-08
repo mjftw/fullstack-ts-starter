@@ -22,11 +22,44 @@ This turborepo uses [Yarn](https://classic.yarnpkg.com/lang/en/) as a package ma
 
 ### Apps and Packages
 
-- `backend`: a [NestJS](https://nestjs.com/) app
-- `web`: a [React](https://reactjs.org) + [Vite](https://vitejs.dev) app
+- `backend`: a [NestJS](https://nestjs.com/) app with multiple entrypoints
+- `web-static`: a [React](https://reactjs.org) + [Vite](https://vitejs.dev) app
 - `web-ssr`: a [React](https://reactjs.org) + [Vite](https://vitejs.dev) app with server-side rendering (SSR)
 
 Check out the [Backend Project Docs](apps/backend/README.md) for more detailed information.
+
+## Backend Entrypoints
+
+The NestJS backend has multiple entrypoints, each serving different purposes:
+
+### API Server (`entrypoints/api`)
+- REST API with Swagger documentation
+- tRPC endpoints for type-safe client communication
+- Runs on port 5002
+- Start with: `yarn dev:api` or `yarn start:api`
+
+### Static React Server (`entrypoints/reactStatic`)
+- Serves the React SPA as static files
+- Includes tRPC endpoints for data fetching
+- Basic setup for serving static content
+- Start with: `yarn dev:react-static` or `yarn start:react-static`
+
+### SSR React Server (`entrypoints/reactSSR`)
+- Full server-side rendering for React
+- Streams rendered HTML to client
+- Hydrates into interactive app
+- Includes tRPC endpoints
+- Configurable server-to-client data passing
+- Start with: `yarn dev:react-ssr` or `yarn start:react-ssr`
+
+### REPL (`entrypoints/repl`)
+- Interactive shell for debugging and development
+- Direct access to NestJS dependency injection container
+- Useful for testing services and repositories
+- Start with: `yarn dev:repl` or `yarn start:repl`
+
+Each entrypoint uses the same core NestJS modules but configures them differently based on its needs.
+
 
 ### Utilities
 
@@ -62,34 +95,12 @@ npm i -g nps
 
 ### Install Dependencies
 
-Make sure you are at root of the project and just run
-
+You can install the monorepo dependencies with:
 ```
-nps prepare
-```
-
-### Build
-
-To build all apps and packages, run the following command at the root of project:
-
-```
-nps build
+yarn install
 ```
 
-### Develop
-
-To develop all apps and packages, run the following command at the root of project:
-
-```
-nps dev
-```
-
-The app should be running at `http://localhost` with reverse proxy configured.
-
-## Other available commands
-
-Run `nps` in the terminal to see list of all available commands.
 
 ## Attribution
 
-This starter kit is based of the following starter kit: [fullstack-turborepo-starter](https://github.com/ejazahm3d/fullstack-turborepo-starter).
+This starter kit was originally based of the following starter kit: [fullstack-turborepo-starter](https://github.com/ejazahm3d/fullstack-turborepo-starter).
