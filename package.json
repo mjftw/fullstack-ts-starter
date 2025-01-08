@@ -11,6 +11,7 @@
     "dev:api": "turbo run dev:api --parallel",
     "dev:react-ssr": "turbo run dev:react-ssr",
     "dev:react-static": "turbo run dev:react-static",
+    "start:api": "turbo run start:api",
     "start:react-ssr": "turbo run start:react-ssr",
     "start:react-static": "turbo run start:react-static",
     "start:repl": "turbo run start:repl",
