@@ -104,8 +104,8 @@ Each entrypoint uses the same core NestJS modules but configures them differentl
 
 ## Deployment
 
-A dockerfile is included to build the full-stack React SSR + Nest app.
-Find more info at [deploy/README.md][deploy/README.md]
+A dockerfile is included to help build and deploy the full-stack React SSR + Nest app.
+Find more info at [deploy/README.md](deploy/README.md)
 
 
 ## Attribution
