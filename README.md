@@ -2,16 +2,18 @@
 
 This is fullstack turborepo starter. It comes with the following features.
 
-- ✅ Turborepo (monorepo tooling)
-- ✅ Nestjs (backend framework)
-  - ✅ Env Config with Validation
-  - ✅ Drizzle (ORM)
-- ✅ React + Vite (frontend framework)
-  - ✅ Server-side rendering (SSR)
-- ✅ tRPC (client-server communication)
-- ✅ Testing using Vitest
-  - ✅ Concurrent isolated database testing 
-- ✅ Postgres Database
+- 📦 Turborepo (monorepo tooling)
+- 🏗️ Nestjs (backend framework)
+  - ⚙️ Env Config with Validation via Zod
+  - 💾 Drizzle (ORM)
+- ⚛️ React + Vite (frontend framework)
+  - 🔄 Server-side rendering (SSR)
+  - 📄 Single Page Application (SPA)
+- 🔌 tRPC (client-server communication)
+- 🧪 Testing using Vitest
+  - 🎯 Concurrent isolated database testing 
+- 🐘 Postgres Database
+- ⚡ SWC (build)
 
 
 ## What's inside?
