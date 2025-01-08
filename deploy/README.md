@@ -1,4 +1,3 @@
-```markdown:deploy/README.md
 # Docker Build for NestJS + React SSR
 
 This Dockerfile builds a production image containing both the NestJS backend and React SSR frontend. It uses a multi-stage build process to optimize the final image size.
@@ -58,7 +57,4 @@ docker run --add-host=host.docker.internal:host-gateway \
   -e DATABASE_URL="postgresql://postgres:postgres@host.docker.internal:5432/postgres" \
   -e ENTRYPOINT_JS="/app/apps/backend/dist/src/entrypoints/repl/main.js" \
   app
-```
-
-The entrypoint script validates required files exist and runs the specified entrypoint.
 ```
