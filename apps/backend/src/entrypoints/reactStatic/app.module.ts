@@ -13,6 +13,8 @@ import { TrpcMiddleware } from '~/middlewares/trpc.middleware';
 import { LoggerMiddleware } from '~/middlewares/logging.middleware';
 
 // TODO: Make StaticMiddleware generic and move to middlewares dir
+// Also need to fix this as currently it serves from the React SSR output dir
+//  since thats what the env var used in StaticMiddleware does 
 import { StaticMiddleware } from '~/reactSSR/static.middleware';
 
 @Module({
