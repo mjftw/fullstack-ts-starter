@@ -14,7 +14,6 @@
     "start:react-static": "nest start --entryFile entrypoints/reactStatic/main",
     "start:react-ssr": "nest start --entryFile entrypoints/reactSSR/main",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
     "dev:repl": "ENTRY_FILE=src/entrypoints/repl/main nest build --webpack --webpackPath webpack-hmr.config.js --watch",
     "dev:api": "ENTRY_FILE=src/entrypoints/api/main nest build --webpack --webpackPath webpack-hmr.config.js --watch",
     "dev:react-static": "ENTRY_FILE=src/entrypoints/reactStatic/main nest build --webpack --webpackPath webpack-hmr.config.js --watch",
