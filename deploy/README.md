@@ -10,17 +10,6 @@ This Dockerfile builds a production image containing both the NestJS backend and
 4. **Builder**: Builds both backend and frontend
 5. **Runner**: Final stage with only production artifacts
 
-## Environment Variables
-
-The following env vars must be set:
-
-```env
-REACT_SSR_CLIENT_STATIC_DIR="/app/apps/web-ssr/dist/client"
-REACT_SSR_CLIENT_INDEX_HTML_PATH="/app/apps/web-ssr/dist/client/index.html" 
-REACT_SSR_SERVER_ENTRY_JS_PATH="/app/apps/web-ssr/dist/server/entry-server.js"
-ENTRYPOINT_JS="/app/apps/backend/dist/src/entrypoints/reactSSR/main.js"
-```
-
 ## Multiple Entrypoints
 
 The image supports running different NestJS entrypoints by changing the `ENTRYPOINT_JS` environment variable:
