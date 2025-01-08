@@ -82,6 +82,7 @@ The NestJS backend has multiple entrypoints, each serving different purposes:
 - Serves the React SPA as static files
 - Includes tRPC endpoints for data fetching
 - Basic setup for serving static content
+- Runs on port 3000
 - Start with: `yarn dev:react-static` or `yarn start:react-static`
 
 ### SSR React Server (`entrypoints/reactSSR`)
@@ -90,6 +91,7 @@ The NestJS backend has multiple entrypoints, each serving different purposes:
 - Hydrates into interactive app
 - Includes tRPC endpoints
 - Configurable server-to-client data passing
+- Interactive shell for debugging and development
 - Start with: `yarn dev:react-ssr` or `yarn start:react-ssr`
 
 ### REPL (`entrypoints/repl`)
