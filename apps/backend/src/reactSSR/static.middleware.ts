@@ -6,15 +6,11 @@ import * as express from 'express';
 @Injectable()
 export class StaticMiddleware implements NestMiddleware {
   constructor(
-    private readonly configService: ConfigService<{
-      REACT_SSR_CLIENT_STATIC_DIR: string;
-    }>,
+    private readonly staticFilesDir: string
   ) {}
 
   use(req: Request, res: Response, next: NextFunction) {
-    const staticPath = this.configService.getOrThrow<string>(
-      'REACT_SSR_CLIENT_STATIC_DIR',
-    );
-    express.static(staticPath)(req, res, next);
+
+    express.static(this.staticFilesDir)(req, res, next);
   }
 }
