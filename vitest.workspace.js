@@ -1,7 +1,9 @@
 import { defineWorkspace } from "vitest/config";
 
 export default defineWorkspace([
-  "./apps/api/vitest.config.ts",
-  "./apps/api/test/vitest-e2e.config.ts",
-  "./apps/web/vite.config.ts",
+  "./apps/backend/vitest.config.ts",
+  "./apps/backend/test/vitest-e2e.config.ts",
+  "./apps/web-ssr/vite.config.ts",
+  "./apps/web-static/vite.config.ts",
 ]);
+

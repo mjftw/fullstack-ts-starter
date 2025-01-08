@@ -3,9 +3,11 @@ const nodeExternals = require('webpack-node-externals');
 const { RunScriptWebpackPlugin } = require('run-script-webpack-plugin');
 
 module.exports = function (options, webpack) {
+  const entryFile = process.env.ENTRY_FILE || 'src/main';
+  
   return {
     ...options,
-    entry: ['webpack/hot/poll?100', options.entry],
+    entry: ['webpack/hot/poll?100', `./${entryFile}`],
     externals: [
       nodeExternals({
         allowlist: ['webpack/hot/poll?100'],

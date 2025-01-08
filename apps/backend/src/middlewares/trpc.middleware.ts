@@ -3,11 +3,12 @@ import { Request, Response, NextFunction } from 'express';
 import * as trpcExpress from '@trpc/server/adapters/express';
 import { appRouter } from '../trpc/routers';
 import { createContext } from '../trpc/trpc';
-import { UserService } from 'src/services/userService';
+import { UserService } from 'src/services/user.service';
+import { HelloService } from '~/services/hello.service';
 
 @Injectable()
 export class TrpcMiddleware implements NestMiddleware {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService, private readonly helloService: HelloService) { }
 
   use(req: Request, res: Response, next: NextFunction) {
     // Strip /trpc prefix from the URL path
@@ -22,6 +23,7 @@ export class TrpcMiddleware implements NestMiddleware {
           opts,
           services: {
             userService: this.userService,
+            helloService: this.helloService,
           },
         }),
     })(req, res, next);

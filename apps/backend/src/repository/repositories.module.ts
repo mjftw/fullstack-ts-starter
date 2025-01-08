@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from 'src/database/database.module';
-import { UsersRepository } from './users/usersRepository.service';
+import { UsersRepository } from './users/users.repository';
 import { Transactor } from 'src/database/drizzle/transactor.service';
 
 @Module({
@@ -8,4 +8,4 @@ import { Transactor } from 'src/database/drizzle/transactor.service';
   providers: [Transactor, UsersRepository],
   exports: [Transactor, UsersRepository],
 })
-export class RepositoriesModule {}
+export class RepositoriesModule { }

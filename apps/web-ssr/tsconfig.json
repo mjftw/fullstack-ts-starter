@@ -21,14 +21,14 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
     "paths": {
-      /* Convenience path for importing api types */
-      "@api/*": ["../api/src/*"]
+      /* Convenience path for importing backend api types */
+      "@backend/*": ["../backend/src/*"]
     }
   },
   "include": ["src"],
   "references": [
     { "path": "./tsconfig.node.json" },
-    /* Allow importing tRPC types from api project */
-    { "path": "../api/tsconfig.types.json" }
+    /* Allow importing tRPC types from backend project */
+    { "path": "../backend/tsconfig.types.json" }
   ]
 }

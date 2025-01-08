@@ -7,11 +7,28 @@
     "lint": {
       "outputs": []
     },
-    "dev": {
+    "dev:api": {
       "cache": false
     },
-    "start": {
-      "dependsOn": ["web-ssr#build"]
+    "dev:react-ssr": {
+      "cache": false
+    },
+    "dev:react-static": {
+      "cache": false
+    },
+    "start:react-ssr": {
+      "dependsOn": ["web-ssr#build"],
+      "cache": false
+    },
+    "start:react-static": {
+      "dependsOn": ["web-static#build"],
+      "cache": false
+    },
+    "start:api": {
+      "cache": false
+    },
+    "start:repl": {
+      "cache": false
     },
     "test": {},
     "test:ci": {

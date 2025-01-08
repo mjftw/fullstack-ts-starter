@@ -1,6 +1,6 @@
 import { describe, Mocked, vi } from 'vitest';
 import { User } from '../database/drizzle/schema';
-import { UsersRepository } from '../repository/users/usersRepository.service';
+import { UsersRepository } from '../repository/users/users.repository';
 import { UsersController } from './users.controller';
 import { createModuleTest } from 'test/utils/vitest';
 

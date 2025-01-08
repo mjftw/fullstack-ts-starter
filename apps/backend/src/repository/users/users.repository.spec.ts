@@ -1,6 +1,6 @@
 import { describe, expect } from 'vitest';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UsersRepository } from './usersRepository.service';
+import { UsersRepository } from './users.repository';
 import * as schema from '../../database/drizzle/schema';
 import { createModuleTest } from 'test/utils/vitest';
 import { DrizzleService } from 'src/database/drizzle/drizzle.service';

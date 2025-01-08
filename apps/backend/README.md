@@ -32,30 +32,72 @@
 $ npm install
 ```
 
+## Backend Entrypoints
+
+The NestJS backend has multiple entrypoints, each serving different purposes:
+
+### API Server (`entrypoints/api`)
+- REST API with Swagger documentation
+- tRPC endpoints for type-safe client communication
+- Runs on port 5002
+- Start with: `yarn dev:api` or `yarn start:api`
+
+### Static React Server (`entrypoints/reactStatic`) 
+- Serves the React SPA as static files
+- Includes tRPC endpoints for data fetching
+- Basic setup for serving static content
+- Start with: `yarn dev:react-static` or `yarn start:react-static`
+
+### SSR React Server (`entrypoints/reactSSR`)
+- Full server-side rendering for React
+- Streams rendered HTML to client
+- Hydrates into interactive app
+- Includes tRPC endpoints
+- Configurable server-to-client data passing
+- Start with: `yarn dev:react-ssr` or `yarn start:react-ssr`
+
+### REPL (`entrypoints/repl`)
+- Interactive shell for debugging and development
+- Direct access to NestJS dependency injection container
+- Useful for testing services and repositories
+- Start with: `yarn dev:repl` or `yarn start:repl`
+
+Each entrypoint uses the same core NestJS modules but configures them differently based on its needs.
+
+
 ## Running the app
 
 ```bash
 # development
-$ npm run start
+$ yarn dev:api
 
 # watch mode
-$ npm run start:dev
+$ yarn dev:api
 
 # production mode
-$ npm run start:prod
+$ yarn start:api
+
+# run with SSR
+$ yarn dev:react-ssr
+
+# run with static file serving
+$ yarn dev:react-static
+
+# run REPL
+$ yarn dev:repl
 ```
 
 ## Test
 
 ```bash
 # unit tests
-$ npm run test
+$ yarn test
 
 # e2e tests
-$ npm run test:e2e
+$ yarn test:e2e
 
 # test coverage
-$ npm run test:cov
+$ yarn test:cov
 ```
 
 ## Support
@@ -315,7 +357,7 @@ yarn build
 This creates:
 
 - An optimized production React app build in `apps/web/dist` using Vite.
-- An optimized production React app build in `apps/api/dist` using NestJS Builder (webpack).
+- An optimized production NestJS app build in `apps/backend/dist` using NestJS Builder (webpack).
 
 1. The NestJS app is configured to serve these static files automatically from the `apps/web/dist` directory.
 
@@ -335,7 +377,7 @@ However in production we can have the NestJS app serve the static build artefact
 
 ```bash
 # Terminal 1 - Run NestJS app
-$ yarn ws api dev
+$ yarn ws backend dev:react-ssr
 
 # Terminal 2 - Run React dev server
 $ yarn ws web dev

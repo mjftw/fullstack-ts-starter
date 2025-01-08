@@ -1,6 +1,6 @@
 import { describe, expect } from 'vitest';
-import { AppController } from './app.controller';
-import { AppService } from '../app.service';
+import { AppController } from './hello.controller';
+import { AppService } from '../services/hello.service';
 
 import { createModuleTest } from 'test/utils/vitest';
 
