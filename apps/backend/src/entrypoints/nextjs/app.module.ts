@@ -12,8 +12,6 @@ import { ServicesModule } from '~/services/services.module';
 import { TrpcMiddleware } from '~/middlewares/trpc.middleware';
 import { LoggerMiddleware } from '~/middlewares/logging.middleware';
 
-import { StaticMiddleware } from '~/middlewares/static.middleware';
-
 @Module({
     imports: [
         ConfigModule.forRoot({
