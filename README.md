@@ -9,7 +9,7 @@ This is fullstack turborepo starter. It comes with the following features.
 - 🎨 Multiple frontend examples
   - ⚛️ React + Vite (frontend framework)
     - 🔄 Server-side rendering (SSR)
-    - 📄 Single Page Application (SPA)
+    - 📄 Static files Application (SPA)
   - 📱 NextJS (frontend framework)
 - 🔌 tRPC (client-server communication)
 - 🧪 Testing using Vitest
