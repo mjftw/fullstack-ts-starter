@@ -11,13 +11,16 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
+// TODO: get this from env
+const apiURL = "http://localhost:5000/trpc";
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <TRPCReactProvider apiURL={apiURL}>{children}</TRPCReactProvider>
       </body>
     </html>
   );

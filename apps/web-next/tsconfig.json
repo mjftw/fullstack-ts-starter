@@ -30,6 +30,9 @@
     "paths": {
       "~/*": [
         "./src/*"
+      ],
+      "@backend/*": [
+        "../backend/src/*"
       ]
     }
   },
@@ -44,5 +47,10 @@
   ],
   "exclude": [
     "node_modules"
+  ],
+  "references": [
+    {
+      "path": "../backend/tsconfig.types.json"
+    }
   ]
 }
