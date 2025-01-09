@@ -31,7 +31,7 @@ import { DevtoolsModule } from '@nestjs/devtools-integration';
         DevtoolsModule.register({
             http: process.env.NODE_ENV !== 'production',
             port: 5003,
-          }),
+        }),
     ],
     controllers: [HelloController, UsersController],
 })
@@ -40,9 +40,5 @@ export class AppModule implements NestModule {
         consumer
             .apply(LoggerMiddleware)
             .forRoutes({ path: '*', method: RequestMethod.ALL });
-
-        consumer
-            .apply(TrpcMiddleware)
-            .forRoutes({ path: 'trpc/*', method: RequestMethod.ALL });
     }
 }
