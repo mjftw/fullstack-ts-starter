@@ -2,13 +2,22 @@
 
 This Dockerfile builds a production image containing both the NestJS backend and React SSR frontend. It uses a multi-stage build process to optimize the final image size.
 
-## Build Stages
+## Deployment Model
 
-1. **Base**: Node 23 Alpine base image
-2. **Turbo Builder**: Adds Turbo for monorepo build orchestration
-3. **Sources**: Prunes monorepo to only required packages
-4. **Builder**: Builds both backend and frontend
-5. **Runner**: Final stage with only production artifacts
+The deployment model is such that we have:
+- A single backend codebase, with many reusable Modules available
+  - Each Module brings a new system capability, and is fully encapsulated and reusable
+  - See the [Database Module](../apps/backend/src/database/database.module.ts) for an example - this Module provides access to the database via Drizzle ORM.
+- Multiple entrypoints to the backend, each performing a different task
+  - E.g. REST API, SSR React, Event Consumers
+- Each entrypoint has it's own NestJS Module (Dependency Injection container), where it specifies which building blocks to use and how to configure them.
+  - We can plug-in whatever Modules we need for our runtime
+  - See [REST API Example module](../apps/backend/src/entrypoints/api/app.module.ts) and main [Entrypoint](../apps/backend/src/entrypoints/api/main.ts)
+- The Docker image builds all of the backend code and entrypoints, and at container boot we pick an entrypoint to run
+  - This allows the same docker image to run multiple different services, each doing different things, but reusing the same code
+- We can deploy the Docker container multiple times, only changing the entrypoint specification for each
+  - This is done by setting the `ENTRYPOINT_JS` environment variable to point to the correct entrypoint file
+  - See how this works in the [Docker entrypoint script](./entrypoint.sh) 
 
 ## Multiple Entrypoints
 
