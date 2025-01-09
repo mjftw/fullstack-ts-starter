@@ -2,6 +2,7 @@ import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import helmet from 'helmet';
 
 declare const module: any;
 async function bootstrap() {
@@ -11,6 +12,9 @@ async function bootstrap() {
         snapshot: process.env.NODE_ENV !== 'production',
       });
       app.enableCors();
+
+      // Secure HTTP headers - defualt settings
+      app.use(helmet());
     
       const config = new DocumentBuilder()
         .setTitle('Example API')
