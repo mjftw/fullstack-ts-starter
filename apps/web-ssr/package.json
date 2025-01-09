@@ -10,14 +10,17 @@
     "build:server": "vite build --ssr src/entry-server.tsx --outDir dist/server"
   },
   "dependencies": {
-    "compression": "^1.7.5",
-    "express": "^4.21.2",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
     "@tanstack/react-query": "4",
     "@trpc/client": "^10.45.2",
     "@trpc/react-query": "^10.45.2",
     "@trpc/server": "^10.45.2",
+    "@types/leaflet": "^1.9.16",
+    "compression": "^1.7.5",
+    "express": "^4.21.2",
+    "leaflet": "^1.9.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-leaflet": "^5.0.0",
     "react-router": "^7.1.1",
     "react-router-dom": "^7.1.1"
   },
