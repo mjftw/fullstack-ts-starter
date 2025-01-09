@@ -1,5 +1,4 @@
 import { lazy, Suspense } from 'react';
-import './Map.css';
 
 // We lazy load the Map component to ensure it only loads on the client not the server.
 // This is because it is a client-side heavy component
