@@ -39,6 +39,7 @@
     "drizzle-kit": "^0.30.1",
     "drizzle-orm": "^0.38.2",
     "express": "^4.21.2",
+    "helmet": "^8.0.0",
     "postgres": "^3.4.5",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^5.0.1",
