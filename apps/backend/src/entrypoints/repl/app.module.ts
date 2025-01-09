@@ -15,8 +15,6 @@ import { ServicesModule } from '~/services/services.module';
 import { TrpcMiddleware } from '~/middlewares/trpc.middleware';
 import { LoggerMiddleware } from '~/middlewares/logging.middleware';
 
-import { ReactSSRController } from '~/reactSSR/reactSSR.controller';
-
 @Module({
     imports: [
         ConfigModule.forRoot({
