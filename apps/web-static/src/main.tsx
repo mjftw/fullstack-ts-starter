@@ -7,6 +7,12 @@ import { trpc } from "./utils/trpc";
 import "./index.css";
 import App from "./App.tsx";
 
+const rootElement = document.getElementById("root");
+
+if (!rootElement) {
+  throw new Error("Failed to find root element");
+}
+
 const queryClient = new QueryClient();
 
 const trpcClient = trpc.createClient({
@@ -17,7 +23,7 @@ const trpcClient = trpc.createClient({
   ],
 });
 
-createRoot(document.getElementById("root")!).render(
+createRoot(rootElement).render(
   <StrictMode>
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>

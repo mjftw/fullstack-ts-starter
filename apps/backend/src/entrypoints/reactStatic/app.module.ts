@@ -4,7 +4,7 @@ import {
     NestModule,
     RequestMethod,
 } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { validateEnv } from '~/config/environment-variables';
 import { DatabaseModule } from '~/database/database.module';
 import { RepositoriesModule } from '~/repository/repositories.module';
@@ -12,12 +12,18 @@ import { ServicesModule } from '~/services/services.module';
 import { TrpcMiddleware } from '~/middlewares/trpc.middleware';
 import { LoggerMiddleware } from '~/middlewares/logging.middleware';
 
-// TODO: Make StaticMiddleware generic and move to middlewares dir
-// Also need to fix this as currently it serves from the React SSR output dir
-//  since thats what the env var used in StaticMiddleware does 
-import { StaticMiddleware } from '~/reactSSR/static.middleware';
+import { StaticMiddleware } from '~/middlewares/static.middleware';
 
 @Module({
+    providers: [
+        {
+            provide: 'STATIC_FILES_DIR',
+            useFactory: (configService: ConfigService) => {
+                return configService.getOrThrow<string>('REACT_STATIC_FILES_DIR');
+            },
+            inject: [ConfigService],
+        }
+    ],
     imports: [
         ConfigModule.forRoot({
             isGlobal: true,
@@ -37,9 +43,9 @@ export class AppModule implements NestModule {
         consumer
             .apply(TrpcMiddleware)
             .forRoutes({ path: 'trpc/*', method: RequestMethod.ALL });
-    
+
         consumer
             .apply(StaticMiddleware)
-            .forRoutes({ path: '/', method: RequestMethod.ALL });
+            .forRoutes({ path: '*', method: RequestMethod.GET });
     }
 }
