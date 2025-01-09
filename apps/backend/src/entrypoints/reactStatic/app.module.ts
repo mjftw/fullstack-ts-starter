@@ -12,9 +12,6 @@ import { ServicesModule } from '~/services/services.module';
 import { TrpcMiddleware } from '~/middlewares/trpc.middleware';
 import { LoggerMiddleware } from '~/middlewares/logging.middleware';
 
-// TODO: Make StaticMiddleware generic and move to middlewares dir
-// Also need to fix this as currently it serves from the React SSR output dir
-//  since thats what the env var used in StaticMiddleware does 
 import { StaticMiddleware } from '~/middlewares/static.middleware';
 
 @Module({
@@ -46,9 +43,9 @@ export class AppModule implements NestModule {
         consumer
             .apply(TrpcMiddleware)
             .forRoutes({ path: 'trpc/*', method: RequestMethod.ALL });
-    
+
         consumer
             .apply(StaticMiddleware)
-            .forRoutes({ path: '*', method: RequestMethod.ALL });
+            .forRoutes({ path: '*', method: RequestMethod.GET });
     }
 }
