@@ -1,11 +1,19 @@
 {
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "dist/**",
+        ".next/**"
+      ]
     },
     "lint": {
       "outputs": []
+    },
+    "dev": {
+      "cache": false
     },
     "dev:api": {
       "cache": false
@@ -16,12 +24,21 @@
     "dev:react-static": {
       "cache": false
     },
+    "dev:nextjs": {
+      "dependsOn": [],
+      "cache": false,
+      "persistent": true
+    },
     "start:react-ssr": {
-      "dependsOn": ["web-ssr#build"],
+      "dependsOn": [
+        "web-ssr#build"
+      ],
       "cache": false
     },
     "start:react-static": {
-      "dependsOn": ["web-static#build"],
+      "dependsOn": [
+        "web-static#build"
+      ],
       "cache": false
     },
     "start:api": {
