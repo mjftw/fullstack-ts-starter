@@ -6,9 +6,11 @@ This is fullstack turborepo starter. It comes with the following features.
 - 🏗️ Nestjs (backend framework)
   - ⚙️ Env Config with Validation via Zod
   - 💾 Drizzle (ORM)
-- ⚛️ React + Vite (frontend framework)
-  - 🔄 Server-side rendering (SSR)
-  - 📄 Single Page Application (SPA)
+- 🎨 Multiple frontend examples
+  - ⚛️ React + Vite (frontend framework)
+    - 🔄 Server-side rendering (SSR)
+    - 📄 Single Page Application (SPA)
+  - 📱 NextJS (frontend framework)
 - 🔌 tRPC (client-server communication)
 - 🧪 Testing using Vitest
   - 🎯 Concurrent isolated database testing 
@@ -22,17 +24,21 @@ This turborepo uses [Yarn](https://classic.yarnpkg.com/lang/en/) as a package ma
 
 ### Apps and Packages
 
+The this project is centered arount the NestJS `backend` app, with a choice of 3 different frontend options available for example.
+The intention is that only one of these would be selected when building your full-stack app.
+
 - `backend`: a [NestJS](https://nestjs.com/) app with multiple entrypoints
+  - Check out the [Backend Project Docs](apps/backend/README.md) for more detailed information.
 - `web-static`: a [React](https://reactjs.org) + [Vite](https://vitejs.dev) app
 - `web-ssr`: a [React](https://reactjs.org) + [Vite](https://vitejs.dev) app with server-side rendering (SSR)
+- `web-next`: a [NextJS](https://nextjs.org) app
+  - The NextJS App is set up to provide the frontend features only, with the `backend` app serving providing `tRPC` a API and data persistence. 
 
-Check out the [Backend Project Docs](apps/backend/README.md) for more detailed information.
 
 ### Utilities
 
 This turborepo has some additional tools already setup for you:
 
-- [Node Package Scripts](https://github.com/sezna/nps#readme) for automation scripts
 - [TypeScript](https://www.typescriptlang.org/) for static type checking
 - [ESLint](https://eslint.org/) for code linting
 - [Prettier](https://prettier.io) for code formatting
@@ -66,7 +72,6 @@ You can install the monorepo dependencies with:
 ```
 yarn install
 ```
-
 
 ## Backend Entrypoints
 
