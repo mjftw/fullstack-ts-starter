@@ -1,20 +1,20 @@
 import { describe, expect } from 'vitest';
-import { AppController } from './hello.controller';
-import { AppService } from '../services/hello.service';
+import { HelloController } from './hello.controller';
+import { HelloService } from '../services/hello.service';
 
 import { createModuleTest } from 'test/utils/vitest';
 
-describe('AppController', () => {
+describe('HelloController', () => {
   const test = createModuleTest({
-    controllers: [AppController],
-    providers: [AppService],
+    controllers: [HelloController],
+    providers: [HelloService],
   });
 
-  describe('root', () => {
+  describe('getHello', () => {
     test('should return "Hello World!"', async ({ module }) => {
-      const appController = module.get(AppController);
+      const helloController = module.get(HelloController);
 
-      expect(await appController.getHello()).toEqual({
+      expect(await helloController.getHello()).toEqual({
         message: 'Hello World',
       });
     });
