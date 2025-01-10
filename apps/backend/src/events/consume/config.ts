@@ -17,7 +17,6 @@ function createConsumerConfig({ env, logger }: {
     RABBITMQ_REQUIRE_TLS: boolean;
     RABBITMQ_CREATE_CONSUMER_EXCHANGES: boolean;
   },
-  ctx: ConsumerCtx,
   logger: MVLogger
 }): RabbitMQConsumersConfig<ConsumerCtx> {
   return {

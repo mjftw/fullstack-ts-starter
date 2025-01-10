@@ -1,6 +1,7 @@
 import { createRabbitMQConsumers, RabbitMQConsumersConfig } from '@multiverse-io/events-tooling-ts';
 import { Inject, Injectable, Logger, OnApplicationShutdown, INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { ConsumerCtx } from './ctx';
 
 @Injectable()
 export class ConsumerService implements OnApplicationShutdown {
@@ -10,6 +11,7 @@ export class ConsumerService implements OnApplicationShutdown {
 
   constructor(
     @Inject('CONSUMER_CONFIG') private readonly consumerConfig: RabbitMQConsumersConfig,
+    @Inject('CONSUMER_CTX') private readonly consumerCtx: ConsumerCtx,
     private readonly configService: ConfigService<{ ENVIRONMENT: "local" | "deployed" }>,
   ) { }
 
@@ -19,7 +21,7 @@ export class ConsumerService implements OnApplicationShutdown {
     const environment = this.configService.getOrThrow('ENVIRONMENT');
 
     try {
-      this.stopConsumers = await createRabbitMQConsumers(this.consumerConfig, environment);
+      this.stopConsumers = await createRabbitMQConsumers(this.consumerConfig, environment, this.consumerCtx);
     } catch (error) {
       this.logger.error(error);
       await this.app.close();
