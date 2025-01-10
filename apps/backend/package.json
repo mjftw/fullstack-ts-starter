@@ -31,6 +31,8 @@
     "test:ci": "vitest run"
   },
   "dependencies": {
+    "@multiverse-io/events-tooling-ts": "^2.0.0",
+    "@multiverse-io/logger": "^0.1.0",
     "@nestjs/common": "^10.1.3",
     "@nestjs/config": "^3.0.0",
     "@nestjs/core": "^10.1.3",
