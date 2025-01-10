@@ -16,7 +16,7 @@ This is fullstack turborepo starter. It comes with the following features.
   - 🎯 Concurrent isolated database testing 
 - 🐘 Postgres Database
 - ⚡ SWC (build)
-
+- 🐰 RabbitMQ (Multiverse events system integration)
 
 ## What's inside?
 
@@ -82,6 +82,12 @@ The NestJS backend has multiple entrypoints, each serving different purposes:
 - tRPC endpoints for type-safe client communication
 - Runs on port 5002
 - Start with: `yarn dev:api` or `yarn start:api`
+
+### Event Consumer (`entrypoints/events`)
+- Handles RabbitMQ event consumption using `@multiverse-io/events-tooling-ts`
+- Manages consumer lifecycle and graceful shutdown
+- Provides shared context for event handlers, allowing access to Services, Logger, etc.
+- Start with: `yarn dev:events` or `yarn start:events`
 
 ### Static React Server (`entrypoints/reactStatic`)
 - Serves the React SPA as static files

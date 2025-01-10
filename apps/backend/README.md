@@ -42,6 +42,12 @@ The NestJS backend has multiple entrypoints, each serving different purposes:
 - Runs on port 5002
 - Start with: `yarn dev:api` or `yarn start:api`
 
+### Event Consumer (`entrypoints/events`)
+- Handles RabbitMQ event consumption using `@multiverse-io/events-tooling-ts`
+- Manages consumer lifecycle and graceful shutdown
+- Provides shared context for event handlers, allowing access to Services, Logger, etc.
+- Start with: `yarn dev:events` or `yarn start:events`
+
 ### Static React Server (`entrypoints/reactStatic`) 
 - Serves the React SPA as static files
 - Includes tRPC endpoints for data fetching

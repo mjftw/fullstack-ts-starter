@@ -27,6 +27,7 @@ The image supports running different NestJS entrypoints by changing the `ENTRYPO
 - **Single Page React App**: `/app/apps/backend/dist/src/entrypoints/reactStatic/main.js`
 - **API Server**: `/app/apps/backend/dist/src/entrypoints/api/main.js`
 - **REPL**: `/app/apps/backend/dist/src/entrypoints/repl/main.js`
+- **Event Consumer**: `/app/apps/backend/dist/src/entrypoints/events/main.js`
 
 New entrypoints can be added at [apps/backend/src/entrypoints](../apps/backend/src/entrypoints), and these will be automatically available to the docker image following the path pattern `/app/apps/backend/dist/src/entrypoints/<entrypoint>/main.js`.
 
@@ -58,5 +59,10 @@ docker run -p 5002:5002 --add-host=host.docker.internal:host-gateway \
 docker run --add-host=host.docker.internal:host-gateway \
   -e DATABASE_URL="postgresql://postgres:postgres@host.docker.internal:5432/postgres" \
   -e ENTRYPOINT_JS="/app/apps/backend/dist/src/entrypoints/repl/main.js" \
+  app
+
+# Run Event Consumer
+docker run --add-host=host.docker.internal:host-gateway \
+  -e ENTRYPOINT_JS="/app/apps/backend/dist/src/entrypoints/events/main.js" \
   app
 ```

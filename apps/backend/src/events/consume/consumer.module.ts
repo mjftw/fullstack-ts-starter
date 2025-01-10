@@ -11,6 +11,7 @@ import { UserService } from '~/services/user.service';
   imports: [ServicesModule],
   providers: [ConsumerService,
     {
+      // TODO: Find a better solution for bridging from Multiverse Logger interface to NestJS Logger interface
       provide: 'MV_LOGGER',
       useFactory: () => {
         const logger = new Logger(ConsumerService.name);
