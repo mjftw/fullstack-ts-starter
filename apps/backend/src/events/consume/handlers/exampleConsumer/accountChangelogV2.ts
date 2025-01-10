@@ -23,7 +23,7 @@ export const handleAccountChangelogV2: EventHandler<
   });
   ctx.logger.info({
     message: "We can access the raw message with the original AMQP message",
-    rawMessage,
+    rawMessage: { exchange: rawMessage.exchange, routingKey: rawMessage.routingKey, deliveryTag: rawMessage.deliveryTag, properties: rawMessage.properties },
   });
   const randomNumber = Math.random();
   ctx.logger.info({ message: "Handling account.changelog", event });
