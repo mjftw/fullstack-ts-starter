@@ -20,6 +20,7 @@
     "dev:react-static": "ENTRY_FILE=src/entrypoints/reactStatic/main nest build --webpack --webpackPath webpack-hmr.config.js --watch",
     "dev:react-ssr": "ENTRY_FILE=src/entrypoints/reactSSR/main nest build --webpack --webpackPath webpack-hmr.config.js --watch",
     "dev:nextjs": "ENTRY_FILE=src/entrypoints/nextjs/main nest build --webpack --webpackPath webpack-hmr.config.js --watch",
+    "dev:events": "ENTRY_FILE=src/entrypoints/events/main nest build --webpack --webpackPath webpack-hmr.config.js --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",

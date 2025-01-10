@@ -8,6 +8,13 @@ export const validationSchemaForEnv = z.object({
   REACT_SSR_CLIENT_STATIC_DIR: z.string().min(1),
   FOO: z.string().min(1),
   BAR: z.coerce.number(),
+  ENVIRONMENT: z.enum(['local', 'deployed']),
+  RABBITMQ_HOST: z.string().min(1),
+  RABBITMQ_PORT: z.coerce.number(),
+  RABBITMQ_USERNAME: z.string().min(1),
+  RABBITMQ_PASSWORD: z.string().min(1),
+  RABBITMQ_REQUIRE_TLS: z.string().transform((value) => value === 'true'),
+  RABBITMQ_CREATE_CONSUMER_EXCHANGES: z.string().transform((value) => value === 'true'),
 });
 
 export type EnvironmentVariables = z.infer<typeof validationSchemaForEnv>;
